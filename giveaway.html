@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Giveaways | Crimenet Central</title>
+    <style>
+        :root {
+            --bg-dark: #0a0a0c;
+            --card-bg: #16161a;
+            --accent-blue: #00a8ff;
+            --accent-red: #ff3333;
+            --text-main: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --nav-bg: #111111;
+            --border-color: #2a2a30;
+            --input-bg: #0d0d11;
+        }
+
+        body.light-theme {
+            --bg-dark: #f0f2f5;
+            --card-bg: #ffffff;
+            --accent-blue: #0077cc;
+            --accent-red: #d92626;
+            --text-main: #1c1e21;
+            --text-muted: #606770;
+            --nav-bg: #e4e6eb;
+            --border-color: #cccccc;
+            --input-bg: #f8f9fa;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        header {
+            background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.95)),
+                        radial-gradient(circle, #1a2a3a 0%, #0a0a0c 100%);
+            border-bottom: 3px solid var(--accent-blue);
+            padding: 2.5rem 1rem;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            letter-spacing: 4px;
+            color: #fff;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(0, 168, 255, 0.5);
+        }
+
+        header p {
+            color: var(--accent-blue);
+            font-weight: 600;
+            letter-spacing: 2px;
+            margin-top: 0.5rem;
+        }
+
+        nav {
+            background-color: var(--nav-bg);
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-blue) var(--nav-bg);
+            transition: background-color 0.3s ease;
+        }
+
+        nav a {
+            flex: 0 0 auto;
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        nav a:hover {
+            color: var(--accent-blue);
+            background-color: rgba(0, 168, 255, 0.1);
+        }
+
+        nav a:active {
+            transform: scale(0.95);
+            background-color: rgba(0, 168, 255, 0.25);
+        }
+
+        .theme-toggle-btn {
+            margin-left: auto;
+            background: transparent;
+            border: 2px solid var(--accent-blue);
+            color: var(--text-main);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .theme-toggle-btn:hover {
+            background-color: var(--accent-blue);
+            color: #000;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            border-left: 4px solid var(--accent-blue);
+            padding-left: 0.75rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: var(--accent-blue);
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.4rem;
+            color: var(--text-main);
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-main);
+            font-size: 1rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 8px rgba(0, 168, 255, 0.3);
+        }
+
+        .btn-submit {
+            display: block;
+            width: 100%;
+            background-color: var(--accent-blue);
+            color: #000;
+            font-weight: bold;
+            font-size: 1rem;
+            text-transform: uppercase;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-submit:hover {
+            background-color: #fff;
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 0 4px 12px rgba(0, 168, 255, 0.4);
+        }
+
+        .btn-submit:active {
+            transform: translateY(1px) scale(0.98);
+            box-shadow: none;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background-color: var(--nav-bg);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Loot Safehouse</h1>
+        <p>Monthly Weapon Skin & Item Giveaways</p>
+    </header>
+
+    <nav>
+        <a href="index.html#about">About</a>
+        <a href="index.html#characters">Heisters</a>
+        <a href="index.html#builds">Builds</a>
+        <a href="index.html#skins">Skins</a>
+        <a href="trade.html">Trading</a>
+        <a href="giveaway.html">Giveaway</a>
+        <a href="index.html#guides">Guides</a>
+        <button class="theme-toggle-btn" id="themeToggleBtn">☀️ Light Mode</button>
+    </nav>
+
+    <div class="container">
+
+        <section>
+            <h2 class="section-title">Active Giveaway</h2>
+            
+            <div class="card">
+                <h3 style="color: var(--accent-blue); font-size: 1.5rem; margin-bottom: 0.5rem;">Mint-Condition Epic Weapon Skin</h3>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+                    Enter your Steam details below to participate in this month's drawing. Winners are selected randomly on the 1st of every month!
+                </p>
+
+                <form onsubmit="alert('Entry received! Good luck, Heister.'); return false;">
+                    <div class="form-group">
+                        <label for="username">Steam Community Name</label>
+                        <input type="text" id="username" name="username" placeholder="e.g., Dallas_Official" required autocomplete="username">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tradelink">Steam Trade URL</label>
+                        <input type="url" id="tradelink" name="tradelink" placeholder="https://steamcommunity.com/tradeoffer/new/..." required autocomplete="off">
+                    </div>
+
+                    <button type="submit" class="btn-submit">Enter Giveaway</button>
+                </form>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <p>This is a fan-created site. PAYDAY 2 is a registered trademark of Starbreeze Studios AB. All assets belong to their respective owners.</p>
+    </footer>
+
+    <script>
+        const themeBtn = document.getElementById('themeToggleBtn');
+        const currentTheme = localStorage.getItem('theme');
+
+        if (currentTheme === 'light') {
+            document.body.classList.add('light-theme');
+            themeBtn.textContent = '🌙 Dark Mode';
+        }
+
+        themeBtn.addEventListener('click', () => {
+            document.body.classList.toggle('light-theme');
+            let theme = 'dark';
+            if (document.body.classList.contains('light-theme')) {
+                theme = 'light';
+                themeBtn.textContent = '🌙 Dark Mode';
+            } else {
+                themeBtn.textContent = '☀️ Light Mode';
+            }
+            localStorage.setItem('theme', theme);
+        });
+    </script>
+
+</body>
+</html>
