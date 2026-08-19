@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trade Skins | Crimenet Central</title>
+    <style>
+        :root {
+            --bg-dark: #0a0a0c;
+            --card-bg: #16161a;
+            --accent-blue: #00a8ff;
+            --accent-red: #ff3333;
+            --text-main: #e0e0e0;
+            --text-muted: #a0a0a0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.95)),
+                        radial-gradient(circle, #1a2a3a 0%, #0a0a0c 100%);
+            border-bottom: 3px solid var(--accent-blue);
+            padding: 2.5rem 1rem;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            letter-spacing: 4px;
+            color: #fff;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(0, 168, 255, 0.5);
+        }
+
+        header p {
+            color: var(--accent-blue);
+            font-weight: 600;
+            letter-spacing: 2px;
+            margin-top: 0.5rem;
+        }
+
+        nav {
+            background-color: #111;
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #222;
+        }
+
+        nav a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            transition: color 0.3s ease, background-color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: var(--accent-blue);
+            background-color: rgba(0, 168, 255, 0.1);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            border-left: 4px solid var(--accent-blue);
+            padding-left: 0.75rem;
+            margin-bottom: 1.5rem;
+            color: #fff;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid #2a2a30;
+            border-radius: 6px;
+            padding: 1.5rem;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-blue);
+        }
+
+        .card h3 {
+            color: var(--accent-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--accent-blue);
+            color: #000;
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            text-decoration: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #fff;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background-color: #050507;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            border-top: 1px solid #1a1a20;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Trade Hub</h1>
+        <p>Community Marketplace & Trading Resources</p>
+    </header>
+
+    <nav>
+        <a href="index.html">← Back to Main Hub</a>
+    </nav>
+
+    <div class="container">
+
+        <section style="margin-bottom: 3rem;">
+            <h2 class="section-title">Where to Trade PAYDAY 2 Items</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+                Since direct trading inside PAYDAY 2 relies on Steam's economy, players use community platforms to find trading partners, swap bulk commons, or buy rare legacy cosmetics.
+            </p>
+
+            <div class="grid">
+                <div class="card">
+                    <h3>Steam Community Market</h3>
+                    <p>The safest official platform to instantly buy or sell weapon skins, armor cosmetics, and safes using Steam Wallet funds.</p>
+                    <a href="https://steamcommunity.com/market/search?appid=218620" target="_blank" class="btn">Open Market</a>
+                </div>
+
+                <div class="card">
+                    <h3>Steam Trading Forums</h3>
+                    <p>Post trade listings directly on the PAYDAY 2 Steam Trading Subforum to negotiate item-for-item swaps with other players.</p>
+                    <a href="https://steamcommunity.com/app/218620/tradingforum/" target="_blank" class="btn">Visit Forums</a>
+                </div>
+
+                <div class="card">
+                    <h3>r/Payday2Trading</h3>
+                    <p>The dedicated Reddit community for trading high-tier skins, legacy items, and arranging bulk common trades.</p>
+                    <a href="https://www.reddit.com/r/payday2trading/" target="_blank" class="btn">View Reddit</a>
+                </div>
+            </div>
+        </section>
+
+        <section style="margin-bottom: 3rem;">
+            <h2 class="section-title">Safe Trading Checklist</h2>
+            <div class="card">
+                <ul style="padding-left: 1.2rem; color: var(--text-muted);">
+                    <li style="margin-bottom: 0.5rem;"><strong>Check In-Game Stats:</strong> Steam trade windows do not display hidden stat boosts. Confirm weapon attributes in-game before trading.</li>
+                    <li style="margin-bottom: 0.5rem;"><strong>Beware 7-Day Hold:</strong> Remember that any skin bought from the Steam Market cannot be traded for 7 days.</li>
+                    <li style="margin-bottom: 0.5rem;"><strong>Avoid Off-Platform Payments:</strong> Never trade Steam items for external real-money transfers or third-party codes to avoid trade scams.</li>
+                </ul>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <p>This is a fan-created site. PAYDAY 2 is a registered trademark of Starbreeze Studios AB. All assets belong to their respective owners.</p>
+    </footer>
+
+</body>
+</html>
