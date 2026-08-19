@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crimenet Central | PAYDAY 2 Fan Hub</title>
+    <style>
+        :root {
+            --bg-dark: #0a0a0c;
+            --card-bg: #16161a;
+            --accent-blue: #00a8ff;
+            --accent-red: #ff3333;
+            --text-main: #e0e0e0;
+            --text-muted: #a0a0a0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.95)),
+                        radial-gradient(circle, #1a2a3a 0%, #0a0a0c 100%);
+            border-bottom: 3px solid var(--accent-blue);
+            padding: 3rem 1rem;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            letter-spacing: 4px;
+            color: #fff;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(0, 168, 255, 0.5);
+        }
+
+        header p {
+            color: var(--accent-blue);
+            font-weight: 600;
+            letter-spacing: 2px;
+            margin-top: 0.5rem;
+        }
+
+        /* --- Horizontally Scrollable Slider Navigation --- */
+        nav {
+            background-color: #111;
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #222;
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch; /* Smooth inertia scrolling on iOS */
+            scrollbar-width: thin; /* Discrete scrollbar for Firefox */
+            scrollbar-color: var(--accent-blue) #111;
+        }
+
+        /* Custom scrollbar styling for Chrome/Safari/Webkit */
+        nav::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        nav::-webkit-scrollbar-track {
+            background: #111;
+        }
+
+        nav::-webkit-scrollbar-thumb {
+            background: var(--accent-blue);
+            border-radius: 3px;
+        }
+
+        nav a {
+            flex: 0 0 auto; /* Keeps items from shrinking so they slide */
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            transition: color 0.3s ease, background-color 0.3s ease, text-shadow 0.3s ease;
+        }
+
+        nav a:hover {
+            color: var(--accent-blue);
+            background-color: rgba(0, 168, 255, 0.1);
+            text-shadow: 0 0 8px rgba(0, 168, 255, 0.4);
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            border-left: 4px solid var(--accent-blue);
+            padding-left: 0.75rem;
+            margin-bottom: 1.5rem;
+            color: #fff;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid #2a2a30;
+            border-radius: 6px;
+            padding: 1.5rem;
+            transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), 
+                        border-color 0.3s ease, 
+                        box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            border-color: var(--accent-blue);
+            box-shadow: 0 8px 20px rgba(0, 168, 255, 0.15);
+        }
+
+        .card h3 {
+            color: var(--accent-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .card-tag {
+            display: inline-block;
+            background-color: #222;
+            color: var(--accent-red);
+            font-size: 0.75rem;
+            font-weight: bold;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .btn-trade {
+            display: inline-block;
+            background-color: var(--accent-blue);
+            color: #000;
+            font-weight: bold;
+            font-size: 1rem;
+            text-transform: uppercase;
+            text-decoration: none;
+            padding: 0.8rem 2rem;
+            border-radius: 4px;
+            letter-spacing: 1px;
+            transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 0 10px rgba(0, 168, 255, 0.3);
+        }
+
+        .btn-trade:hover {
+            background-color: #fff;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+
+        .build-list {
+            list-style: none;
+        }
+
+        .build-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #222;
+        }
+
+        .build-list li:last-child {
+            border-bottom: none;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background-color: #050507;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            border-top: 1px solid #1a1a20;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Crimenet Central</h1>
+        <p>Unofficial PAYDAY 2 Fan Page & Resource Hub</p>
+    </header>
+
+    <!-- Slider Nav Bar -->
+    <nav>
+        <a href="#about">About</a>
+        <a href="#characters">Heisters</a>
+        <a href="#builds">Builds</a>
+        <a href="#skins">Skins</a>
+        <a href="#trading">Trading</a>
+        <a href="giveaway.html">Giveaway</a>
+        <a href="#guides">Guides</a>
+    </nav>
+
+    <div class="container">
+
+        <!-- About Section -->
+        <section id="about" style="margin-bottom: 3rem;">
+            <h2 class="section-title">Welcome to the Safehouse</h2>
+            <p style="color: var(--text-muted);">
+                PAYDAY 2 is an action-packed, four-player co-op shooter that lets gamers don the masks of the original PAYDAY crew—Dallas, Hoxton, Wolf, and Chains—as they descend on Washington D.C. for an epic crime spree. This fan page serves as a quick reference guide for character profiles, build meta ideas, cosmetics, trading tips, and strategy guides.
+            </p>
+        </section>
+
+        <!-- Characters Section -->
+        <section id="characters">
+            <h2 class="section-title">The Original Crew</h2>
+            <div class="grid">
+                <div class="card">
+                    <span class="card-tag">Mastermind</span>
+                    <h3>Dallas</h3>
+                    <p>The de facto leader of the Payday Gang. Known for his iconic American Flag mask and his urgent need for medic bags.</p>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Fugitive</span>
+                    <h3>Hoxton</h3>
+                    <p>The sharp-tongued Brit who reclaimed his title after breaking out of custody in one of the gang's most memorable heists.</p>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Technician</span>
+                    <h3>Wolf</h3>
+                    <p>A former software developer turned unpredictable wild card. Wolf handles heavy machinery, explosives, and drill repairs.</p>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Enforcer</span>
+                    <h3>Chains</h3>
+                    <p>A military veteran who brings massive firepower and heavy armor support to every high-stakes job.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Builds Section -->
+        <section id="builds">
+            <h2 class="section-title">Popular Build Archetypes</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Anarchist Armor-Gate</h3>
+                    <p>Focuses on rapid armor regeneration on hit, letting you continuously absorb damage while dealing high DPS.</p>
+                    <ul class="build-list" style="margin-top: 1rem;">
+                        <li><strong>Perk Deck:</strong> Anarchist</li>
+                        <li><strong>Armor:</strong> Lightweight Ballistic Vest / Suit</li>
+                        <li><strong>Key Skill:</strong> Bullseye (Basic)</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Hacker Dodge</h3>
+                    <p>Uses Pocket ECMs to stun enemies and restore health to the entire team while maintaining high dodge chances.</p>
+                    <ul class="build-list" style="margin-top: 1rem;">
+                        <li><strong>Perk Deck:</strong> Hacker</li>
+                        <li><strong>Armor:</strong> Two-Piece Suit</li>
+                        <li><strong>Key Skill:</strong> Sneaky Bastard</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Kingpin Tank</h3>
+                    <p>Uses the Injector to convert incoming damage into health, allowing you to survive open fire during crucial objective pushes.</p>
+                    <ul class="build-list" style="margin-top: 1rem;">
+                        <li><strong>Perk Deck:</strong> Kingpin</li>
+                        <li><strong>Armor:</strong> Improved Combined Tactical Vest</li>
+                        <li><strong>Key Skill:</strong> Iron Man (Ace)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skins Section -->
+        <section id="skins">
+            <h2 class="section-title">Weapon & Armor Skins</h2>
+            <div class="grid">
+                <div class="card">
+                    <span class="card-tag">System Overhaul</span>
+                    <h3>The End of Paid Drills</h3>
+                    <p>Paid safe drills were officially removed in <strong>Update 100</strong> when the black market became free. New safes dropped after this update no longer required paid microtransactions to open.</p>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Drop System</span>
+                    <h3>Daily Direct Drops</h3>
+                    <p>Safe drops were completely phased out in <strong>Update 199.3</strong>. The old weekly safe system was replaced with direct weapon skin drops during post-heist card picks, which are available on a daily cooldown (~20 to 24 hours).</p>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Wear Conditions</span>
+                    <h3>Permanent Conditions</h3>
+                    <p>Weapon skins range from <strong>Mint-Condition</strong> (cleanest) down to <strong>Battle-Worn</strong> (most damaged). Conditions are permanent and never degrade with gameplay. Armor skins have no wear levels and are always pristine.</p>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Rarity Factor</span>
+                    <h3>Collection & Weapon Type</h3>
+                    <p>Skins for flexible, meta base-game weapons (like the CAR-4) carry higher value than niche DLC weapons. Rare legacy collections, like the Completely OVERKILL Pack (COP) Legendaries, command top market prices.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Trading Section -->
+        <section id="trading">
+            <h2 class="section-title">Marketplace & Trading Strategy</h2>
+            <div class="grid">
+                <div class="card">
+                    <span class="card-tag">Steam Economy</span>
+                    <h3>7-Day Trade Hold</h3>
+                    <p>Purchasing a skin from the Steam Community Market imposes a strict 7-day trade and resell hold on that item before it can be moved or traded again.</p>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Market Strategy</span>
+                    <h3>Low-Tier Fee Management</h3>
+                    <p>When selling $0.03 common skins, Steam/publisher fees take $0.02 (a massive percentage cut). Instead of listing individual $0.03 items, trade bulk commons to other players for higher-value skins before listing on the market.</p>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Meta Impact</span>
+                    <h3>Weapon Balance Updates</h3>
+                    <p>Keep an eye on patch notes. Game rebalances can dramatically shift cosmetic demand—for example, LMG buffs previously caused skins like the KSP Party Crasher to increase in value significantly overnight.</p>
+                </div>
+            </div>
+
+            <!-- Integrated Trade Button -->
+            <div style="text-align: center; margin-top: 1rem; margin-bottom: 3rem;">
+                <a href="trade.html" class="btn-trade">Trade Skins</a>
+            </div>
+        </section>
+
+        <!-- Guides Section -->
+        <section id="guides">
+            <h2 class="section-title">Essential Tips</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Stealth Basics</h3>
+                    <p>Always manage your detection risk (keep it at 3 or 4 for dodge/stealth builds). Save pagers for guards in critical paths, as you can only answer 4 per heist.</p>
+                </div>
+                <div class="card">
+                    <h3>Loud Survival</h3>
+                    <p>Cover is mandatory on higher difficulties like Death Sentence. Never stay out in the open during assault waves—focus on taking cover and controlling choke points.</p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <footer>
+        <p>This is a fan-created site. PAYDAY 2 is a registered trademark of Starbreeze Studios AB. All assets belong to their respective owners.</p>
+    </footer>
+
+</body>
+</html>
