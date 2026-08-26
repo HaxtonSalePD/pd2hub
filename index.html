@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crimenet Central | PAYDAY 2 Fan Hub</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <header>
+        <h1>Crimenet Central</h1>
+        <p>Unofficial PAYDAY 2 Fan Page & Resource Hub</p>
+    </header>
+
+    <nav class="page-nav">
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">☰</button>
+        <div class="nav-links" id="navLinks">
+            <a href="index.html">Home</a>
+            <a href="trade.html">Trading</a>
+            <a href="giveaway.html">Giveaway</a>
+        </div>
+        <button class="theme-toggle-btn" id="themeToggleBtn">☀️ Light Mode</button>
+    </nav>
+
+    <div class="anchor-nav">
+        <a href="#about">About</a>
+        <a href="#characters">Heisters</a>
+        <a href="#builds">Builds</a>
+        <a href="#skins">Skins</a>
+        <a href="#guides">Guides</a>
+    </div>
+
+    <div class="container">
+
+        <section id="about" style="margin-bottom: 3rem;">
+            <h2 class="section-title">Welcome to the Safehouse</h2>
+            <p style="color: var(--text-muted);">
+                PAYDAY 2 is an action-packed, four-player co-op shooter that lets gamers don the masks of the original PAYDAY crew—Dallas, Hoxton, Wolf, and Chains—as they descend on Washington D.C. for an epic crime spree. This fan page serves as a quick reference guide for character profiles, build meta ideas, cosmetics, trading tips, and strategy guides.
+            </p>
+        </section>
+
+        <section id="characters">
+            <h2 class="section-title">The Original Crew <span style="font-size: 0.9rem; color: var(--text-muted); font-weight: normal;">(Click a heister for details)</span></h2>
+            <div class="grid">
+                <div class="card card-clickable" onclick="openHeisterModal('Dallas', 'Mastermind', 'Nathan Steele', 'Medic Bag', 'AMCAR Rifle', 'The mastermind leader of the crew. Famous for shouting for medic bags and coordinating strategic hostage management.')">
+                    <span class="card-tag">Mastermind</span>
+                    <h3>Dallas</h3>
+                    <p>The de facto leader of the Payday Gang. Known for his iconic American Flag mask and his urgent need for medic bags.</p>
+                </div>
+                <div class="card card-clickable" onclick="openHeisterModal('Hoxton', 'Fugitive', 'James Hoxworth', 'First Aid Kit', 'AK Rifle', 'The sharp-tongued Brit who spent time in HM Prison Fridley before being broken out by the gang in a high-stakes heist.')">
+                    <span class="card-tag">Fugitive</span>
+                    <h3>Hoxton</h3>
+                    <p>The sharp-tongued Brit who reclaimed his title after breaking out of custody in one of the gang's most memorable heists.</p>
+                </div>
+                <div class="card card-clickable" onclick="openHeisterModal('Wolf', 'Technician', 'Ulf', 'Sentry Gun / Trip Mines', 'Compact-5', 'A former software developer from Sweden who turned to crime after his company collapsed. Handles drills and heavy explosives.')">
+                    <span class="card-tag">Technician</span>
+                    <h3>Wolf</h3>
+                    <p>A former software developer turned unpredictable wild card. Wolf handles heavy machinery, explosives, and drill repairs.</p>
+                </div>
+                <div class="card card-clickable" onclick="openHeisterModal('Chains', 'Enforcer', 'Nicolas', 'Ammo Bag', 'Reinbeck Shotgun', 'A former military veteran who served in the Navy SEALs. Brings heavy firepower and frontline defense to every job.')">
+                    <span class="card-tag">Enforcer</span>
+                    <h3>Chains</h3>
+                    <p>A military veteran who brings massive firepower and heavy armor support to every high-stakes job.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="builds">
+            <h2 class="section-title">Popular Build Archetypes</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Anarchist Armor-Gate</h3>
+                    <p>Focuses on rapid armor regeneration on hit, letting you continuously absorb damage while dealing high DPS.</p>
+                    <ul class="build-list" style="margin-top: 1rem;">
+                        <li><strong>Perk Deck:</strong> Anarchist</li>
+                        <li><strong>Armor:</strong> Lightweight Ballistic Vest / Suit</li>
+                        <li><strong>Key Skill:</strong> Bullseye (Basic)</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Hacker Dodge</h3>
+                    <p>Uses Pocket ECMs to stun enemies and restore health to the entire team while maintaining high dodge chances.</p>
+                    <ul class="build-list" style="margin-top: 1rem;">
+                        <li><strong>Perk Deck:</strong> Hacker</li>
+                        <li><strong>Armor:</strong> Two-Piece Suit</li>
+                        <li><strong>Key Skill:</strong> Sneaky Bastard</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Kingpin Tank</h3>
+                    <p>Uses the Injector to convert incoming damage into health, allowing you to survive open fire during crucial objective pushes.</p>
+                    <ul class="build-list" style="margin-top: 1rem;">
+                        <li><strong>Perk Deck:</strong> Kingpin</li>
+                        <li><strong>Armor:</strong> Improved Combined Tactical Vest</li>
+                        <li><strong>Key Skill:</strong> Iron Man (Ace)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="skins">
+            <h2 class="section-title">Weapon & Armor Skins</h2>
+            <div class="grid">
+                <div class="card">
+                    <span class="card-tag">System Overhaul</span>
+                    <h3>The End of Paid Drills</h3>
+                    <p>Paid safe drills were officially removed in <strong>Update 100</strong> when the black market became free. New safes dropped after this update no longer required paid microtransactions to open.</p>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Drop System</span>
+                    <h3>Daily Direct Drops</h3>
+                    <p>Safe drops were completely phased out in <strong>Update 199.3</strong>. The old weekly safe system was replaced with direct weapon skin drops during post-heist card picks, which are available on a daily cooldown (~20 to 24 hours).</p>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Wear Conditions</span>
+                    <h3>Permanent Conditions</h3>
+                    <p>Weapon skins range from <strong>Mint-Condition</strong> (cleanest) down to <strong>Battle-Worn</strong> (most damaged). Conditions are permanent and never degrade with gameplay. Armor skins have no wear levels and are always pristine.</p>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Rarity Factor</span>
+                    <h3>Collection & Weapon Type</h3>
+                    <p>Skins for flexible, meta base-game weapons (like the CAR-4) carry higher value than niche DLC weapons. Rare legacy collections, like the Completely OVERKILL Pack (COP) Legendaries, command top market prices.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="trading">
+            <h2 class="section-title">Marketplace & Trading Strategy</h2>
+            <div class="grid">
+                <div class="card">
+                    <span class="card-tag">Steam Economy</span>
+                    <h3>7-Day Trade Hold</h3>
+                    <p>Purchasing a skin from the Steam Community Market imposes a strict 7-day trade and resell hold on that item before it can be moved or traded again.</p>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Market Strategy</span>
+                    <h3>Low-Tier Fee Management</h3>
+                    <p>When selling $0.03 common skins, Steam/publisher fees take $0.02 (a massive percentage cut). Instead of listing individual $0.03 items, trade bulk commons to other players for higher-value skins before listing on the market.</p>
+                </div>
+                <div class="card">
+                    <span class="card-tag">Meta Impact</span>
+                    <h3>Weapon Balance Updates</h3>
+                    <p>Keep an eye on patch notes. Game rebalances can dramatically shift cosmetic demand—for example, LMG buffs previously caused skins like the KSP Party Crasher to increase in value significantly overnight.</p>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 1rem; margin-bottom: 3rem;">
+                <a href="trade.html" class="btn-trade">Trade Skins</a>
+            </div>
+        </section>
+
+        <section id="guides">
+            <h2 class="section-title">Essential Tips</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Stealth Basics</h3>
+                    <p>Always manage your detection risk (keep it at 3 or 4 for dodge/stealth builds). Save pagers for guards in critical paths, as you can only answer 4 per heist.</p>
+                </div>
+                <div class="card">
+                    <h3>Loud Survival</h3>
+                    <p>Cover is mandatory on higher difficulties like Death Sentence. Never stay out in the open during assault waves—focus on taking cover and controlling choke points.</p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <div class="modal-overlay" id="heisterModal" onclick="closeModalOnOverlay(event)">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <span class="card-tag" id="modalTag">Role</span>
+            <h2 id="modalTitle" style="color: var(--accent-blue); margin-bottom: 0.5rem;">Name</h2>
+            <p style="margin-bottom: 1rem;" id="modalBio">Bio description goes here.</p>
+            <hr style="border-color: var(--border-color); margin-bottom: 1rem;">
+            <p><strong>Real Name:</strong> <span id="modalRealName">-</span></p>
+            <p><strong>Preferred Deployable:</strong> <span id="modalEquipment">-</span></p>
+            <p><strong>Signature Weapon:</strong> <span id="modalWeapon">-</span></p>
+        </div>
+    </div>
+
+    <div id="toast" class="toast">Action completed successfully!</div>
+
+    <footer>
+        <p>This is a fan-created site. PAYDAY 2 is a registered trademark of Starbreeze Studios AB. All assets belong to their respective owners.</p>
+    </footer>
+
+    <script src="main.js"></script>
+    <script>
+        // Page-specific Modal Logic
+        function openHeisterModal(name, role, realName, equipment, weapon, bio) {
+            document.getElementById('modalTitle').textContent = name;
+            document.getElementById('modalTag').textContent = role;
+            document.getElementById('modalRealName').textContent = realName;
+            document.getElementById('modalEquipment').textContent = equipment;
+            document.getElementById('modalWeapon').textContent = weapon;
+            document.getElementById('modalBio').textContent = bio;
+            document.getElementById('heisterModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('heisterModal').classList.remove('active');
+        }
+
+        function closeModalOnOverlay(event) {
+            if (event.target === document.getElementById('heisterModal')) {
+                closeModal();
+            }
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
+</body>
+</html>
