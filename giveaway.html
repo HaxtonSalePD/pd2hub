@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Giveaways | Crimenet Central</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <header>
+        <h1>Loot Safehouse</h1>
+        <p>Monthly Weapon Skin & Item Giveaways</p>
+    </header>
+
+    <nav>
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">☰</button>
+        <div class="nav-links" id="navLinks">
+            <a href="index.html">Home</a>
+            <a href="trade.html">Trading</a>
+            <a href="giveaway.html">Giveaway</a>
+        </div>
+        <button class="theme-toggle-btn" id="themeToggleBtn">☀️ Light Mode</button>
+    </nav>
+
+    <div class="container container-narrow">
+
+        <section>
+            <h2 class="section-title">Active Giveaway</h2>
+            
+            <div class="card">
+                <h3 style="color: var(--accent-blue); font-size: 1.5rem; margin-bottom: 0.5rem;">Mint-Condition Epic Weapon Skin</h3>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+                    Enter your Steam details below to participate in this month's drawing. Winners are selected randomly on the 1st of every month!
+                </p>
+
+                <form id="giveawayForm">
+                    <div class="form-group">
+                        <label for="username">Steam Community Name</label>
+                        <input type="text" id="username" name="username" placeholder="e.g., Dallas_Official" required autocomplete="username">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tradelink">Steam Trade URL</label>
+                        <input type="url" id="tradelink" name="tradelink" placeholder="https://steamcommunity.com/tradeoffer/new/..." required autocomplete="off">
+                    </div>
+
+                    <button type="submit" class="btn-submit">Enter Giveaway</button>
+                </form>
+            </div>
+        </section>
+
+    </div>
+
+    <div id="toast" class="toast">Action completed successfully!</div>
+
+    <footer>
+        <p>This is a fan-created site. PAYDAY 2 is a registered trademark of Starbreeze Studios AB. All assets belong to their respective owners.</p>
+    </footer>
+
+    <script src="main.js"></script>
+    <script>
+        // Page-specific Form Validation
+        const giveawayForm = document.getElementById('giveawayForm');
+        if (giveawayForm) {
+            giveawayForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const tradeLinkInput = document.getElementById('tradelink').value.trim();
+                const validPrefix = "https://steamcommunity.com/tradeoffer/new/?partner=";
+
+                if (!tradeLinkInput.startsWith(validPrefix)) {
+                    showToast('Invalid Trade URL! Must start with https://steamcommunity.com/tradeoffer/new/?partner=');
+                    return;
+                }
+
+                showToast('Entry received! Good luck, Heister.');
+                giveawayForm.reset();
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trade Skins | Crimenet Central</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <header>
+        <h1>Trade Hub</h1>
+        <p>Community Marketplace & Trading Resources</p>
+    </header>
+
+    <nav>
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">☰</button>
+        <div class="nav-links" id="navLinks">
+            <a href="index.html">Home</a>
+            <a href="trade.html">Trading</a>
+            <a href="giveaway.html">Giveaway</a>
+        </div>
+        <button class="theme-toggle-btn" id="themeToggleBtn">☀️ Light Mode</button>
+    </nav>
+
+    <div class="container">
+
+        <section style="margin-bottom: 3rem;">
+            <h2 class="section-title">Where to Trade PAYDAY 2 Items</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+                Since direct trading inside PAYDAY 2 relies on Steam's economy, players use community platforms to find trading partners, swap bulk commons, or buy rare legacy cosmetics.
+            </p>
+
+            <div class="grid">
+                <div class="card">
+                    <h3>Steam Community Market</h3>
+                    <p>The safest official platform to instantly buy or sell weapon skins, armor cosmetics, and safes using Steam Wallet funds.</p>
+                    <a href="https://steamcommunity.com/market/search?appid=218620" target="_blank" rel="noopener noreferrer" class="btn">Open Market</a>
+                </div>
+
+                <div class="card">
+                    <h3>Steam Trading Forums</h3>
+                    <p>Post trade listings directly on the PAYDAY 2 Steam Trading Subforum to negotiate item-for-item swaps with other players.</p>
+                    <a href="https://steamcommunity.com/app/218620/tradingforum/" target="_blank" rel="noopener noreferrer" class="btn">Visit Forums</a>
+                </div>
+
+                <div class="card">
+                    <h3>r/Payday2Trading</h3>
+                    <p>The dedicated Reddit community for trading high-tier skins, legacy items, and arranging bulk common trades.</p>
+                    <a href="https://www.reddit.com/r/payday2trading/" target="_blank" rel="noopener noreferrer" class="btn">View Reddit</a>
+                </div>
+            </div>
+        </section>
+
+        <section style="margin-bottom: 3rem;">
+            <h2 class="section-title">Safe Trading Checklist</h2>
+            <div class="card">
+                <ul style="padding-left: 1.2rem; color: var(--text-muted);">
+                    <li style="margin-bottom: 0.5rem;"><strong>Check In-Game Stats:</strong> Steam trade windows do not display hidden stat boosts. Confirm weapon attributes in-game before trading.</li>
+                    <li style="margin-bottom: 0.5rem;"><strong>Beware 7-Day Hold:</strong> Remember that any skin bought from the Steam Market cannot be traded for 7 days.</li>
+                    <li style="margin-bottom: 0.5rem;"><strong>Avoid Off-Platform Payments:</strong> Never trade Steam items for external real-money transfers or third-party codes to avoid trade scams.</li>
+                </ul>
+            </div>
+        </section>
+
+    </div>
+
+    <div id="toast" class="toast">Action completed successfully!</div>
+
+    <footer>
+        <p>This is a fan-created site. PAYDAY 2 is a registered trademark of Starbreeze Studios AB. All assets belong to their respective owners.</p>
+    </footer>
+
+    <script src="main.js"></script>
+</body>
+</html>
