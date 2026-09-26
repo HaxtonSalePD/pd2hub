@@ -165,6 +165,22 @@ async function apiRequest(path, options = {}) {
     return data;
 }
 
+// --- TRADE URL PREFILL ---
+// Steam never exposes the trade token through any API, so it must be pasted once.
+// After that, the server remembers it and we fill it in automatically.
+async function prefillTradeLink() {
+    const input = document.getElementById('tradelink') || document.getElementById('sellerTradeLink');
+    if (!input || input.value || !getSavedUser()) return;
+    try {
+        const me = await apiRequest('/api/me');
+        if (me.tradeLink && !input.value) {
+            input.value = me.tradeLink;
+        }
+    } catch {
+        // Server waking up — the user can still paste it manually
+    }
+}
+
 // --- GIVEAWAY INFO (giveaway page only) ---
 async function loadGiveawayInfo() {
     const prizeEl = document.getElementById('prizeName');
@@ -214,6 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initSteamLoginLink();
     renderSteamUserBadge();
     loadGiveawayInfo();
+    prefillTradeLink();
 
     // Wake the backend early: on the free plan it sleeps after ~15 minutes idle,
     // so this ping starts it while the visitor is still reading the page.
