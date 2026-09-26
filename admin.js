@@ -55,9 +55,13 @@ function renderAdminData(data) {
     document.getElementById('entryCount').textContent = data.totalEntries;
 
     const prizeEl = document.getElementById('currentPrize');
-    prizeEl.replaceChildren('Current prize: ', Object.assign(document.createElement('strong'), { textContent: data.prizeName }));
-    if (data.startedAt) {
-        prizeEl.append(` — running since ${new Date(data.startedAt).toLocaleDateString()}`);
+    if (data.active === false) {
+        prizeEl.replaceChildren('No active giveaway — start one below.');
+    } else {
+        prizeEl.replaceChildren('Current prize: ', Object.assign(document.createElement('strong'), { textContent: data.prizeName }));
+        if (data.startedAt) {
+            prizeEl.append(` — running since ${new Date(data.startedAt).toLocaleDateString()}`);
+        }
     }
 
     const winnersList = document.getElementById('winnersList');
@@ -165,7 +169,34 @@ async function dismissReports(listingId) {
 }
 
 // --- PRIZE PICKER ---
-let selectedPrize = null;
+let prizePool = []; // [{ item, quantity }]
+
+function renderPrizePool() {
+    const list = document.getElementById('prizePoolList');
+    if (prizePool.length === 0) {
+        list.replaceChildren();
+        return;
+    }
+    const header = el('p', 'winner-meta', 'Prize pool:');
+    header.style.marginBottom = '0.4rem';
+    list.replaceChildren(header, ...prizePool.map((entry, i) => {
+        const row = el('div', 'winner-row');
+        const info = el('div', 'winner-info');
+        const name = el('span', 'inv-name', entry.quantity > 1 ? `${entry.item.name} ×${entry.quantity}` : entry.item.name);
+        if (entry.item.color && /^#[0-9a-f]{6}$/i.test(entry.item.color)) name.style.color = entry.item.color;
+        info.append(name);
+        row.append(info);
+        const removeBtn = el('button', 'btn-small dismiss', '✕');
+        removeBtn.type = 'button';
+        removeBtn.title = 'Remove from pool';
+        removeBtn.addEventListener('click', () => {
+            prizePool.splice(i, 1);
+            renderPrizePool();
+        });
+        row.append(removeBtn);
+        return row;
+    }));
+}
 
 function renderPrizeGrid(items) {
     const grid = document.getElementById('prizeGrid');
@@ -185,12 +216,25 @@ function renderPrizeGrid(items) {
         if (metaParts.length) tile.append(el('div', 'inv-meta', metaParts.join(' · ')));
 
         tile.addEventListener('click', () => {
-            selectedPrize = item;
-            document.querySelectorAll('#prizeGrid .inv-tile.selected').forEach(t => t.classList.remove('selected'));
-            tile.classList.add('selected');
-            document.getElementById('newPrizeName').value = item.name;
+            if (prizePool.some(entry => entry.item.name === item.name)) {
+                showToast('That item is already in the prize pool.');
+                return;
+            }
+            let quantity = 1;
+            const left = item.available ?? item.count;
+            if (left > 1) {
+                const answer = prompt(`How many? (you have ${left})`, '1');
+                if (answer === null) return;
+                quantity = Math.floor(Number(answer));
+                if (!Number.isInteger(quantity) || quantity < 1 || quantity > left) {
+                    showToast(`Please enter a number between 1 and ${left}.`);
+                    return;
+                }
+            }
+            prizePool.push({ item, quantity });
+            renderPrizePool();
             document.getElementById('prizePickHint').textContent =
-                'Selected from your inventory — the giveaway page will show its picture and colors.';
+                `${prizePool.length} item${prizePool.length === 1 ? '' : 's'} in the pool — add more, or start the giveaway.`;
         });
         return tile;
     }));
@@ -218,25 +262,29 @@ async function loadPrizeInventory() {
 async function startNewGiveaway() {
     const input = document.getElementById('newPrizeName');
     const prizeName = input.value.trim();
-    if (prizeName.length < 3) {
-        showToast('Please enter a prize name (at least 3 characters).');
+    const usingPool = prizePool.length > 0;
+    if (!usingPool && prizeName.length < 3) {
+        showToast('Pick skins for the pool, or enter a prize name (at least 3 characters).');
         return;
     }
-    if (!confirm(`Start a new giveaway for "${prizeName}"?\n\nAll current entries and winners are archived, and everyone can enter again.`)) return;
+    const label = usingPool
+        ? prizePool.map(entry => entry.quantity > 1 ? `${entry.item.name} ×${entry.quantity}` : entry.item.name).join(' + ')
+        : prizeName;
+    if (!confirm(`Start a new giveaway for "${label}"?\n\nAll current entries and winners are archived, and everyone can enter again.`)) return;
 
     const btn = document.getElementById('startGiveawayBtn');
     btn.disabled = true;
     try {
         const data = await apiRequest('/api/admin/giveaway/new', {
             method: 'POST',
-            body: JSON.stringify(selectedPrize && selectedPrize.name === prizeName
-                ? { itemName: selectedPrize.name }
+            body: JSON.stringify(usingPool
+                ? { prizes: prizePool.map(entry => ({ itemName: entry.item.name, quantity: entry.quantity })) }
                 : { prizeName })
         });
         showToast(data.message);
         input.value = '';
-        selectedPrize = null;
-        document.querySelectorAll('#prizeGrid .inv-tile.selected').forEach(t => t.classList.remove('selected'));
+        prizePool = [];
+        renderPrizePool();
         await loadGiveawayAdmin();
     } catch (err) {
         showToast(err.message);
@@ -262,9 +310,21 @@ async function drawWinner() {
     }
 }
 
+async function cancelGiveaway() {
+    if (!confirm('Cancel the current giveaway?\n\nNo winner is drawn, entries are archived, and the giveaway page closes until you start a new one.')) return;
+    try {
+        const data = await apiRequest('/api/admin/giveaway', { method: 'DELETE' });
+        showToast(data.message);
+        await loadGiveawayAdmin();
+    } catch (err) {
+        showToast(err.message);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('drawBtn').addEventListener('click', drawWinner);
     document.getElementById('startGiveawayBtn').addEventListener('click', startNewGiveaway);
     document.getElementById('pickPrizeBtn').addEventListener('click', loadPrizeInventory);
+    document.getElementById('cancelGiveawayBtn').addEventListener('click', cancelGiveaway);
     loadGiveawayAdmin();
 });

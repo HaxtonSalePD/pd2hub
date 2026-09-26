@@ -553,6 +553,7 @@
                     <button type="button" class="btn-submit" id="pickPrizeBtn" style="margin-bottom: 0.75rem;">📦 Pick a Skin from My Inventory</button>
                     <p class="winner-meta" id="prizePickHint" style="margin-bottom: 1rem;">Picking a skin shows its picture and colors on the giveaway page. Or just type a prize name below.</p>
                     <div class="inv-grid" id="prizeGrid" style="display: none;"></div>
+                    <div id="prizePoolList" style="margin-bottom: 1rem;"></div>
 
                     <label for="newPrizeName" style="display:block; font-weight:bold; font-size:0.9rem; text-transform:uppercase; margin-bottom:0.4rem;">New prize name</label>
                     <input type="text" class="admin-input" id="newPrizeName" placeholder="e.g. Battle-Worn Legendary Sputnik Safe Skin" minlength="3" maxlength="80">
@@ -560,6 +561,14 @@
                     <p class="draw-help">
                         This archives all current entries and winners, updates the prize shown on the
                         giveaway page, and lets everyone — including past winners — enter again.
+                    </p>
+
+                    <hr style="border: none; border-top: 1px solid var(--border-color); margin: 1.5rem 0;">
+
+                    <button type="button" class="btn-submit" id="cancelGiveawayBtn" style="background: transparent; border: 2px solid var(--accent-red); color: var(--accent-red);">Cancel Current Giveaway</button>
+                    <p class="draw-help">
+                        Stops the current giveaway without drawing a winner. Entries are archived and the
+                        giveaway page tells visitors there is nothing running until you start a new one.
                     </p>
                 </div>
             </section>
