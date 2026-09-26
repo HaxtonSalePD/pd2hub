@@ -78,7 +78,7 @@ async function loadGiveawayAdmin() {
         return;
     }
 
-    status.textContent = 'Loading… (the server can take up to a minute to wake up)';
+    status.textContent = 'Opening the safehouse… (the server may need a minute to wake up)';
     try {
         const data = await apiRequest('/api/admin/giveaway');
         status.textContent = '';

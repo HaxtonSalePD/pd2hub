@@ -10,29 +10,30 @@
     <meta property="og:description" content="Heister profiles, build guides, skin economy tips, trading resources and community giveaways.">
     <meta property="og:url" content="https://haxtonsalepd.github.io/pd2hub/index.html">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Allerta+Stencil&family=Oswald:wght@500;600&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #0a0a0c;
-            --card-bg: #16161a;
-            --accent-blue: #00a8ff;
-            --accent-red: #ff3333;
+            --bg-dark: #0c0b09;
+            --card-bg: #15130f;
+            --accent-blue: #ffc21a;
+            --accent-red: #e5484d;
             --text-main: #e0e0e0;
             --text-muted: #a0a0a0;
-            --nav-bg: #111111;
-            --subnav-bg: #18181c;
-            --border-color: #2a2a30;
+            --nav-bg: #12100c;
+            --subnav-bg: #171410;
+            --border-color: #2e2a22;
         }
 
         body.light-theme {
-            --bg-dark: #f0f2f5;
-            --card-bg: #ffffff;
-            --accent-blue: #0077cc;
-            --accent-red: #d92626;
+            --bg-dark: #f2efe8;
+            --card-bg: #fffdf7;
+            --accent-blue: #8a6a00;
+            --accent-red: #c92a2a;
             --text-main: #1c1e21;
             --text-muted: #606770;
-            --nav-bg: #e4e6eb;
-            --subnav-bg: #dcdfe4;
-            --border-color: #cccccc;
+            --nav-bg: #e9e4d8;
+            --subnav-bg: #ded7c7;
+            --border-color: #d6cfc0;
         }
 
         html {
@@ -43,7 +44,7 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Barlow', 'Segoe UI', Tahoma, sans-serif;
         }
 
         body {
@@ -55,7 +56,7 @@
 
         header {
             background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.95)),
-                        radial-gradient(circle, #1a2a3a 0%, #0a0a0c 100%);
+                        radial-gradient(circle, #241c0d 0%, #0c0b09 100%);
             border-bottom: 3px solid var(--accent-blue);
             padding: 3rem 1rem;
             text-align: center;
@@ -66,7 +67,7 @@
             letter-spacing: 4px;
             color: #fff;
             text-transform: uppercase;
-            text-shadow: 0 0 10px rgba(0, 168, 255, 0.5);
+            text-shadow: 0 0 10px rgba(255, 194, 26, 0.5);
             animation: fadeIn 1s ease-in-out;
         }
 
@@ -109,7 +110,7 @@
 
         nav a:hover, nav a.active {
             color: var(--accent-blue);
-            background-color: rgba(0, 168, 255, 0.1);
+            background-color: rgba(255, 194, 26, 0.1);
         }
 
         .nav-toggle {
@@ -233,7 +234,7 @@
         .card:hover {
             transform: translateY(-6px);
             border-color: var(--accent-blue);
-            box-shadow: 0 8px 20px rgba(0, 168, 255, 0.15);
+            box-shadow: 0 8px 20px rgba(255, 194, 26, 0.15);
         }
 
         .card-clickable {
@@ -247,7 +248,7 @@
 
         .card-tag {
             display: inline-block;
-            background-color: rgba(255, 51, 51, 0.15);
+            background-color: rgba(229, 72, 77, 0.15);
             color: var(--accent-red);
             font-size: 0.75rem;
             font-weight: bold;
@@ -269,7 +270,7 @@
             border-radius: 4px;
             letter-spacing: 1px;
             transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
-            box-shadow: 0 0 10px rgba(0, 168, 255, 0.3);
+            box-shadow: 0 0 10px rgba(255, 194, 26, 0.3);
             cursor: pointer;
         }
 
@@ -326,7 +327,7 @@
             position: relative;
             transform: translateY(-20px);
             transition: transform 0.3s ease;
-            box-shadow: 0 10px 30px rgba(0, 168, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(255, 194, 26, 0.3);
         }
 
         .modal-overlay.active .modal-content {
@@ -399,16 +400,34 @@
             font-size: 0.85rem;
             border-top: 1px solid var(--border-color);
         }
+        /* --- PAYDAY THEME --- */
+        header h1 {
+            font-family: 'Allerta Stencil', Impact, 'Arial Black', sans-serif;
+            text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.55);
+        }
+
+        header {
+            border-bottom: 8px solid;
+            border-image: repeating-linear-gradient(-45deg, var(--accent-blue) 0 16px, #0b0a08 16px 32px) 8;
+        }
+
+        .section-title, nav a, .theme-toggle-btn, button, .btn, .btn-trade, .btn-submit,
+        .btn-trade-offer, .btn-remove, .btn-import, .btn-small {
+            font-family: 'Oswald', 'Barlow', sans-serif;
+            letter-spacing: 1px;
+        }
+
     </style>
+
 </head>
 <body>
 
     <header>
         <h1>PD2Hub Central</h1>
-        <p>Unofficial PAYDAY 2 Fan Page & Resource Hub</p>
+        <p>Your Crew’s Unofficial Hideout — Builds, Skins & Heist Wisdom</p>
         <div style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-            <a href="giveaway.html" class="btn-trade">🎁 Enter the Giveaway</a>
-            <a href="market.html" class="btn-trade" style="background: transparent; color: var(--accent-blue); border: 2px solid var(--accent-blue); box-shadow: none;">Browse the Skin Market</a>
+            <a href="giveaway.html" class="btn-trade">🎁 This Month’s Loot Drop</a>
+            <a href="market.html" class="btn-trade" style="background: transparent; color: var(--accent-blue); border: 2px solid var(--accent-blue); box-shadow: none;">Hit the Skin Market</a>
         </div>
     </header>
 
@@ -441,7 +460,7 @@
         <section id="about" style="margin-bottom: 3rem;">
             <h2 class="section-title">Welcome to the Safehouse</h2>
             <p style="color: var(--text-muted);">
-                PAYDAY 2 is an action-packed, four-player co-op shooter that lets gamers don the masks of the original PAYDAY crew—Dallas, Hoxton, Wolf, and Chains—as they descend on Washington D.C. for an epic crime spree. This fan page serves as a quick reference guide for character profiles, build meta ideas, cosmetics, trading tips, and strategy guides.
+                PAYDAY 2 drops you and three friends into the masks of Dallas, Hoxton, Wolf and Chains for the crime spree of a lifetime across Washington D.C. This is my corner of the safehouse: the crew’s profiles, builds that actually survive Death Sentence, what your skins are really worth, and the trading wisdom people usually learn the hard way. No wiki-diving required — grab a coffee, the van leaves in five.
             </p>
         </section>
 
@@ -593,7 +612,7 @@
             <a href="market.html" style="color: var(--text-muted);">Market</a> &middot;
             <a href="giveaway.html" style="color: var(--text-muted);">Giveaway</a>
         </p>
-        <p>This is a fan-created site. PAYDAY 2 is a registered trademark of Starbreeze Studios AB. All assets belong to their respective owners.</p>
+        <p>Built by a fan, for the crew. PAYDAY 2 is a registered trademark of Starbreeze Studios AB. All assets belong to their respective owners.</p>
     </footer>
 
     <script src="main.js"></script>

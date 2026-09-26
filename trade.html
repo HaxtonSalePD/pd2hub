@@ -10,27 +10,28 @@
     <meta property="og:description" content="Where to trade PAYDAY 2 skins safely, plus a safe trading checklist.">
     <meta property="og:url" content="https://haxtonsalepd.github.io/pd2hub/trade.html">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Allerta+Stencil&family=Oswald:wght@500;600&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #0a0a0c;
-            --card-bg: #16161a;
-            --accent-blue: #00a8ff;
-            --accent-red: #ff3333;
+            --bg-dark: #0c0b09;
+            --card-bg: #15130f;
+            --accent-blue: #ffc21a;
+            --accent-red: #e5484d;
             --text-main: #e0e0e0;
             --text-muted: #a0a0a0;
-            --nav-bg: #111111;
-            --border-color: #2a2a30;
+            --nav-bg: #12100c;
+            --border-color: #2e2a22;
         }
 
         body.light-theme {
-            --bg-dark: #f0f2f5;
-            --card-bg: #ffffff;
-            --accent-blue: #0077cc;
-            --accent-red: #d92626;
+            --bg-dark: #f2efe8;
+            --card-bg: #fffdf7;
+            --accent-blue: #8a6a00;
+            --accent-red: #c92a2a;
             --text-main: #1c1e21;
             --text-muted: #606770;
-            --nav-bg: #e4e6eb;
-            --border-color: #cccccc;
+            --nav-bg: #e9e4d8;
+            --border-color: #d6cfc0;
         }
 
         html {
@@ -41,7 +42,7 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Barlow', 'Segoe UI', Tahoma, sans-serif;
         }
 
         body {
@@ -53,7 +54,7 @@
 
         header {
             background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.95)),
-                        radial-gradient(circle, #1a2a3a 0%, #0a0a0c 100%);
+                        radial-gradient(circle, #241c0d 0%, #0c0b09 100%);
             border-bottom: 3px solid var(--accent-blue);
             padding: 2.5rem 1rem;
             text-align: center;
@@ -64,7 +65,7 @@
             letter-spacing: 4px;
             color: #fff;
             text-transform: uppercase;
-            text-shadow: 0 0 10px rgba(0, 168, 255, 0.5);
+            text-shadow: 0 0 10px rgba(255, 194, 26, 0.5);
         }
 
         header p {
@@ -106,7 +107,7 @@
 
         nav a:hover, nav a.active {
             color: var(--accent-blue);
-            background-color: rgba(0, 168, 255, 0.1);
+            background-color: rgba(255, 194, 26, 0.1);
         }
 
         .nav-toggle {
@@ -223,7 +224,7 @@
         .btn:hover {
             background-color: #fff;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 168, 255, 0.3);
+            box-shadow: 0 4px 12px rgba(255, 194, 26, 0.3);
         }
 
         .btn:active {
@@ -277,13 +278,31 @@
             font-size: 0.85rem;
             border-top: 1px solid var(--border-color);
         }
+        /* --- PAYDAY THEME --- */
+        header h1 {
+            font-family: 'Allerta Stencil', Impact, 'Arial Black', sans-serif;
+            text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.55);
+        }
+
+        header {
+            border-bottom: 8px solid;
+            border-image: repeating-linear-gradient(-45deg, var(--accent-blue) 0 16px, #0b0a08 16px 32px) 8;
+        }
+
+        .section-title, nav a, .theme-toggle-btn, button, .btn, .btn-trade, .btn-submit,
+        .btn-trade-offer, .btn-remove, .btn-import, .btn-small {
+            font-family: 'Oswald', 'Barlow', sans-serif;
+            letter-spacing: 1px;
+        }
+
     </style>
+
 </head>
 <body>
 
     <header>
         <h1>Trade Hub</h1>
-        <p>Community Marketplace & Trading Resources</p>
+        <p>Where the Crew Swaps Loot — Markets, Forums & Honest Advice</p>
     </header>
 
     <nav>
@@ -359,7 +378,7 @@
             <a href="market.html" style="color: var(--text-muted);">Market</a> &middot;
             <a href="giveaway.html" style="color: var(--text-muted);">Giveaway</a>
         </p>
-        <p>This is a fan-created site. PAYDAY 2 is a registered trademark of Starbreeze Studios AB. All assets belong to their respective owners.</p>
+        <p>Built by a fan, for the crew. PAYDAY 2 is a registered trademark of Starbreeze Studios AB. All assets belong to their respective owners.</p>
     </footer>
 
     <script src="main.js"></script>
