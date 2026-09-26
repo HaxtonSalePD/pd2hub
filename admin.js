@@ -164,6 +164,56 @@ async function dismissReports(listingId) {
     }
 }
 
+// --- PRIZE PICKER ---
+let selectedPrize = null;
+
+function renderPrizeGrid(items) {
+    const grid = document.getElementById('prizeGrid');
+    grid.replaceChildren(...items.map(item => {
+        const tile = el('div', 'inv-tile');
+        if (item.image) {
+            const img = el('img');
+            img.src = item.image;
+            img.alt = '';
+            img.loading = 'lazy';
+            tile.append(img);
+        }
+        const name = el('div', 'inv-name', item.name);
+        if (item.color && /^#[0-9a-f]{6}$/i.test(item.color)) name.style.color = item.color;
+        tile.append(name);
+        const metaParts = [item.condition, item.rarity, item.statBoost ? 'Stat Boost' : null].filter(Boolean);
+        if (metaParts.length) tile.append(el('div', 'inv-meta', metaParts.join(' · ')));
+
+        tile.addEventListener('click', () => {
+            selectedPrize = item;
+            document.querySelectorAll('#prizeGrid .inv-tile.selected').forEach(t => t.classList.remove('selected'));
+            tile.classList.add('selected');
+            document.getElementById('newPrizeName').value = item.name;
+            document.getElementById('prizePickHint').textContent =
+                'Selected from your inventory — the giveaway page will show its picture and colors.';
+        });
+        return tile;
+    }));
+    grid.style.display = 'grid';
+}
+
+async function loadPrizeInventory() {
+    const hint = document.getElementById('prizePickHint');
+    hint.textContent = 'Opening your stash… (this can take a few seconds)';
+    try {
+        const data = await apiRequest('/api/inventory');
+        if (data.items.length === 0) {
+            hint.textContent = 'No tradable PAYDAY 2 items found in your inventory.';
+            return;
+        }
+        renderPrizeGrid(data.items);
+        hint.textContent = `${data.items.length} items — click one to make it the prize.`;
+    } catch (err) {
+        hint.textContent = 'Could not load your inventory — you can still type a prize name below.';
+        showToast(err.message);
+    }
+}
+
 // --- START NEW GIVEAWAY ---
 async function startNewGiveaway() {
     const input = document.getElementById('newPrizeName');
@@ -179,10 +229,14 @@ async function startNewGiveaway() {
     try {
         const data = await apiRequest('/api/admin/giveaway/new', {
             method: 'POST',
-            body: JSON.stringify({ prizeName })
+            body: JSON.stringify(selectedPrize && selectedPrize.name === prizeName
+                ? { itemName: selectedPrize.name }
+                : { prizeName })
         });
         showToast(data.message);
         input.value = '';
+        selectedPrize = null;
+        document.querySelectorAll('#prizeGrid .inv-tile.selected').forEach(t => t.classList.remove('selected'));
         await loadGiveawayAdmin();
     } catch (err) {
         showToast(err.message);
@@ -211,5 +265,6 @@ async function drawWinner() {
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('drawBtn').addEventListener('click', drawWinner);
     document.getElementById('startGiveawayBtn').addEventListener('click', startNewGiveaway);
+    document.getElementById('pickPrizeBtn').addEventListener('click', loadPrizeInventory);
     loadGiveawayAdmin();
 });
