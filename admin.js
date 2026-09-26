@@ -54,6 +54,12 @@ function createWinnerRow(winner, isLatest) {
 function renderAdminData(data) {
     document.getElementById('entryCount').textContent = data.totalEntries;
 
+    const prizeEl = document.getElementById('currentPrize');
+    prizeEl.replaceChildren('Current prize: ', Object.assign(document.createElement('strong'), { textContent: data.prizeName }));
+    if (data.startedAt) {
+        prizeEl.append(` — running since ${new Date(data.startedAt).toLocaleDateString()}`);
+    }
+
     const winnersList = document.getElementById('winnersList');
     if (data.winners.length === 0) {
         winnersList.replaceChildren(el('p', 'winner-meta', 'No winners drawn yet.'));
@@ -78,9 +84,110 @@ async function loadGiveawayAdmin() {
         status.textContent = '';
         panel.hidden = false;
         renderAdminData(data);
+        loadReports();
     } catch (err) {
         status.textContent = err.message;
         panel.hidden = true;
+    }
+}
+
+// --- REPORTED LISTINGS ---
+function createReportRow(report) {
+    const row = el('div', 'winner-row');
+    const info = el('div', 'winner-info');
+
+    if (report.listing) {
+        const name = el('a', 'winner-name', `${report.listing.itemName} — ${(report.listing.priceCents / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' })}`);
+        name.href = `https://steamcommunity.com/profiles/${encodeURIComponent(report.listing.sellerSteamId)}`;
+        name.target = '_blank';
+        name.rel = 'noopener noreferrer';
+        name.title = "View the seller's Steam profile";
+        info.append(name);
+        info.append(el('p', 'winner-meta', `Seller: ${report.listing.sellerName}`));
+    } else {
+        info.append(el('span', 'winner-name', '(listing already removed)'));
+    }
+
+    const reportCount = report.count === 1 ? '1 report' : `${report.count} reports`;
+    info.append(el('p', 'winner-meta', reportCount + (report.reasons.length ? ` — "${report.reasons.join('" · "')}"` : '')));
+    row.append(info);
+
+    const actions = el('div', 'report-actions');
+    if (report.listing) {
+        const removeBtn = el('button', 'btn-small remove', 'Remove');
+        removeBtn.type = 'button';
+        removeBtn.addEventListener('click', () => adminRemoveListing(report.listingId));
+        actions.append(removeBtn);
+    }
+    const dismissBtn = el('button', 'btn-small dismiss', 'Dismiss');
+    dismissBtn.type = 'button';
+    dismissBtn.addEventListener('click', () => dismissReports(report.listingId));
+    actions.append(dismissBtn);
+    row.append(actions);
+
+    return row;
+}
+
+async function loadReports() {
+    const list = document.getElementById('reportsList');
+    try {
+        const reports = await apiRequest('/api/admin/reports');
+        if (reports.length === 0) {
+            list.replaceChildren(el('p', 'winner-meta', 'No reported listings. All quiet in the safehouse.'));
+            return;
+        }
+        list.replaceChildren(...reports.map(createReportRow));
+    } catch (err) {
+        list.replaceChildren(el('p', 'winner-meta', err.message));
+    }
+}
+
+async function adminRemoveListing(listingId) {
+    if (!confirm('Remove this listing from the market? This cannot be undone.')) return;
+    try {
+        const data = await apiRequest(`/api/admin/listings/${encodeURIComponent(listingId)}`, { method: 'DELETE' });
+        showToast(data.message);
+        loadReports();
+    } catch (err) {
+        showToast(err.message);
+    }
+}
+
+async function dismissReports(listingId) {
+    if (!confirm('Dismiss all reports against this listing? It stays on the market.')) return;
+    try {
+        const data = await apiRequest(`/api/admin/reports/${encodeURIComponent(listingId)}`, { method: 'DELETE' });
+        showToast(data.message);
+        loadReports();
+    } catch (err) {
+        showToast(err.message);
+    }
+}
+
+// --- START NEW GIVEAWAY ---
+async function startNewGiveaway() {
+    const input = document.getElementById('newPrizeName');
+    const prizeName = input.value.trim();
+    if (prizeName.length < 3) {
+        showToast('Please enter a prize name (at least 3 characters).');
+        return;
+    }
+    if (!confirm(`Start a new giveaway for "${prizeName}"?\n\nAll current entries and winners are archived, and everyone can enter again.`)) return;
+
+    const btn = document.getElementById('startGiveawayBtn');
+    btn.disabled = true;
+    try {
+        const data = await apiRequest('/api/admin/giveaway/new', {
+            method: 'POST',
+            body: JSON.stringify({ prizeName })
+        });
+        showToast(data.message);
+        input.value = '';
+        await loadGiveawayAdmin();
+    } catch (err) {
+        showToast(err.message);
+    } finally {
+        btn.disabled = false;
     }
 }
 
@@ -103,5 +210,6 @@ async function drawWinner() {
 
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('drawBtn').addEventListener('click', drawWinner);
+    document.getElementById('startGiveawayBtn').addEventListener('click', startNewGiveaway);
     loadGiveawayAdmin();
 });

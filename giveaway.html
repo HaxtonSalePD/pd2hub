@@ -328,10 +328,11 @@
             <h2 class="section-title">Active Giveaway</h2>
 
             <div class="card">
-                <h3 style="color: var(--accent-blue); font-size: 1.5rem; margin-bottom: 0.5rem;">Mint-Condition Epic Weapon Skin</h3>
+                <h3 id="prizeName" style="color: var(--accent-blue); font-size: 1.5rem; margin-bottom: 0.5rem;">Mint-Condition Epic Weapon Skin</h3>
                 <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
                     Sign in with Steam and enter your trade URL below to participate in this month's drawing.
                 </p>
+                <p id="giveawayEntryCount" style="display: none; color: var(--text-muted); font-size: 0.9rem; margin: -1rem 0 1.5rem;"></p>
 
                 <form onsubmit="handleGiveawaySubmit(event)">
                     <div class="form-group">

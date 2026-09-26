@@ -165,6 +165,25 @@ async function apiRequest(path, options = {}) {
     return data;
 }
 
+// --- GIVEAWAY INFO (giveaway page only) ---
+async function loadGiveawayInfo() {
+    const prizeEl = document.getElementById('prizeName');
+    if (!prizeEl) return;
+    try {
+        const data = await apiRequest('/api/giveaway');
+        prizeEl.textContent = data.prizeName;
+        const countEl = document.getElementById('giveawayEntryCount');
+        if (countEl) {
+            countEl.textContent = data.totalEntries === 1
+                ? '1 heister has entered so far.'
+                : `${data.totalEntries} heisters have entered so far.`;
+            countEl.style.display = 'block';
+        }
+    } catch {
+        // Server still waking up — the static prize text stays visible
+    }
+}
+
 // --- SUBMIT GIVEAWAY ENTRY ---
 async function handleGiveawaySubmit(event) {
     event.preventDefault();
@@ -194,6 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initNavToggle();
     initSteamLoginLink();
     renderSteamUserBadge();
+    loadGiveawayInfo();
 
     // Wake the backend early: on the free plan it sleeps after ~15 minutes idle,
     // so this ping starts it while the visitor is still reading the page.

@@ -209,6 +209,74 @@
             margin-top: 0.75rem;
         }
 
+        .current-prize {
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .current-prize strong {
+            color: var(--accent-blue);
+        }
+
+        .admin-input {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-main);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .admin-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 8px rgba(0, 168, 255, 0.3);
+        }
+
+        .btn-danger {
+            background-color: var(--accent-red);
+            color: #fff;
+        }
+
+        .btn-danger:hover {
+            background-color: #fff;
+            color: var(--accent-red);
+        }
+
+        .report-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .btn-small {
+            border: none;
+            border-radius: 4px;
+            padding: 0.5rem 0.8rem;
+            font-weight: bold;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        .btn-small.remove {
+            background-color: var(--accent-red);
+            color: #fff;
+        }
+
+        .btn-small.dismiss {
+            background: transparent;
+            border: 2px solid var(--border-color);
+            color: var(--text-muted);
+        }
+
+        .btn-small.dismiss:hover {
+            border-color: var(--accent-blue);
+            color: var(--text-main);
+        }
+
         .btn-submit {
             display: block;
             width: 100%;
@@ -392,6 +460,7 @@
             <section>
                 <h2 class="section-title">Draw a Winner</h2>
                 <div class="card">
+                    <p class="current-prize" id="currentPrize"></p>
                     <p class="entry-count" id="entryCount">0</p>
                     <p class="entry-count-label">Giveaway entries</p>
 
@@ -406,6 +475,24 @@
             <section>
                 <h2 class="section-title">Past Draws</h2>
                 <div class="card" id="winnersList"></div>
+            </section>
+
+            <section>
+                <h2 class="section-title">Start New Giveaway</h2>
+                <div class="card">
+                    <label for="newPrizeName" style="display:block; font-weight:bold; font-size:0.9rem; text-transform:uppercase; margin-bottom:0.4rem;">New prize name</label>
+                    <input type="text" class="admin-input" id="newPrizeName" placeholder="e.g. Battle-Worn Legendary Sputnik Safe Skin" minlength="3" maxlength="80">
+                    <button type="button" class="btn-submit btn-danger" id="startGiveawayBtn">Start New Giveaway</button>
+                    <p class="draw-help">
+                        This archives all current entries and winners, updates the prize shown on the
+                        giveaway page, and lets everyone — including past winners — enter again.
+                    </p>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="section-title">Reported Listings</h2>
+                <div class="card" id="reportsList"></div>
             </section>
         </div>
 
