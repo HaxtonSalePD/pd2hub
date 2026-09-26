@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PD2Hub Central | PAYDAY 2 Fan Hub</title>
     <meta name="description" content="Unofficial PAYDAY 2 fan hub: heister profiles, build guides, skin economy tips, trading resources and community giveaways.">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="PD2Hub Central – PAYDAY 2 Fan Hub">
+    <meta property="og:description" content="Heister profiles, build guides, skin economy tips, trading resources and community giveaways.">
+    <meta property="og:url" content="https://haxtonsalepd.github.io/pd2hub/index.html">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
     <style>
         :root {
@@ -367,6 +371,21 @@
             transform: translateY(0);
         }
 
+        a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+            outline: 2px solid var(--accent-blue);
+            outline-offset: 2px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation: none !important;
+                transition: none !important;
+            }
+            html {
+                scroll-behavior: auto;
+            }
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -387,6 +406,10 @@
     <header>
         <h1>PD2Hub Central</h1>
         <p>Unofficial PAYDAY 2 Fan Page & Resource Hub</p>
+        <div style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <a href="giveaway.html" class="btn-trade">🎁 Enter the Giveaway</a>
+            <a href="market.html" class="btn-trade" style="background: transparent; color: var(--accent-blue); border: 2px solid var(--accent-blue); box-shadow: none;">Browse the Skin Market</a>
+        </div>
     </header>
 
     <nav class="page-nav">
@@ -564,6 +587,12 @@
     <div id="toast" class="toast" role="status" aria-live="polite">Action completed successfully!</div>
 
     <footer>
+        <p style="margin-bottom: 0.5rem;">
+            <a href="index.html" style="color: var(--text-muted);">Home</a> &middot;
+            <a href="trade.html" style="color: var(--text-muted);">Trading</a> &middot;
+            <a href="market.html" style="color: var(--text-muted);">Market</a> &middot;
+            <a href="giveaway.html" style="color: var(--text-muted);">Giveaway</a>
+        </p>
         <p>This is a fan-created site. PAYDAY 2 is a registered trademark of Starbreeze Studios AB. All assets belong to their respective owners.</p>
     </footer>
 
