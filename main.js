@@ -194,4 +194,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initNavToggle();
     initSteamLoginLink();
     renderSteamUserBadge();
+
+    // Wake the backend early: on the free plan it sleeps after ~15 minutes idle,
+    // so this ping starts it while the visitor is still reading the page.
+    fetch(`${BACKEND_URL}/`).catch(() => {});
 });
