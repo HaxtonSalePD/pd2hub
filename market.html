@@ -526,6 +526,18 @@
             background-color: rgba(128, 128, 128, 0.15);
         }
 
+        .verified-tag {
+            color: #7bc96f;
+            background-color: transparent;
+            border: 1px solid #7bc96f;
+        }
+
+        .mine-tag {
+            color: var(--accent-blue);
+            background-color: transparent;
+            border: 1px solid var(--accent-blue);
+        }
+
         .listing-card h3 {
             color: var(--text-main);
             font-size: 1.1rem;
@@ -759,6 +771,7 @@
                             Turn the toggle on to load your skins. Name, condition, rarity and picture are locked
                             to what Steam says, and your inventory must be set to public.
                         </p>
+                        <input type="search" id="invFilter" placeholder="Filter your skins…" style="display: none; margin-top: 0.6rem;" aria-label="Filter your skins">
                         <div class="inv-grid" id="inventoryGrid" style="display: none;" role="listbox" aria-label="Your PAYDAY 2 items"></div>
                     </div>
 

@@ -12,6 +12,16 @@ const RARITY_CLASSES = {
 let searchTimer;
 let latestRequestId = 0;
 
+function timeAgo(iso) {
+    const seconds = (Date.now() - new Date(iso).getTime()) / 1000;
+    if (seconds < 60) return 'just now';
+    const minutes = seconds / 60, hours = minutes / 60, days = hours / 24;
+    if (minutes < 60) return `${Math.floor(minutes)} min ago`;
+    if (hours < 24) return `${Math.floor(hours)} h ago`;
+    if (days < 30) return `${Math.floor(days)} day${Math.floor(days) < 2 ? '' : 's'} ago`;
+    return new Date(iso).toLocaleDateString();
+}
+
 function formatPrice(priceCents) {
     return (priceCents / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
 }
@@ -53,6 +63,12 @@ function createListingCard(listing, currentUser) {
     if (listing.statBoost) {
         tags.append(el('span', 'card-tag condition-tag', 'Stat Boost'));
     }
+    if (listing.verified) {
+        tags.append(el('span', 'card-tag verified-tag', '✓ Verified'));
+    }
+    if (currentUser && currentUser.steamId === listing.sellerSteamId) {
+        tags.append(el('span', 'card-tag mine-tag', 'Your listing'));
+    }
 
     card.append(
         tags,
@@ -80,7 +96,7 @@ function createListingCard(listing, currentUser) {
     }
     seller.append(el('span', null, listing.sellerName));
 
-    const listedDate = el('span', 'listing-date', `Listed ${new Date(listing.createdAt).toLocaleDateString()}`);
+    const listedDate = el('span', 'listing-date', `Listed ${timeAgo(listing.createdAt)}`);
     card.append(seller, listedDate);
 
     const actions = el('div', 'listing-actions');
@@ -204,7 +220,18 @@ async function reportListing(listingId) {
 // --- STEAM INVENTORY GRID ---
 let selectedInvItem = null;
 
+let invItems = [];
+
 function renderInventoryGrid(items) {
+    invItems = items;
+    const filterInput = document.getElementById('invFilter');
+    if (filterInput) {
+        filterInput.style.display = items.length > 8 ? 'block' : 'none';
+    }
+    drawInventoryTiles(items);
+}
+
+function drawInventoryTiles(items) {
     const grid = document.getElementById('inventoryGrid');
     grid.replaceChildren(...items.map(item => {
         const tile = el('div', 'inv-tile');
@@ -231,6 +258,11 @@ function renderInventoryGrid(items) {
         return tile;
     }));
     grid.style.display = 'grid';
+}
+
+function onInvFilter() {
+    const term = document.getElementById('invFilter').value.trim().toLowerCase();
+    drawInventoryTiles(term ? invItems.filter(i => i.name.toLowerCase().includes(term)) : invItems);
 }
 
 function selectInvItem(item, tile) {
@@ -310,11 +342,23 @@ function onSkinsToggle() {
 const TAB_SECTIONS = { browse: 'listings', sell: 'sell', mine: 'mylistings' };
 let myListingsLoaded = false;
 
+function initialTab() {
+    const fromHash = window.location.hash.replace('#', '');
+    if (TAB_SECTIONS[fromHash]) return fromHash;
+    try {
+        const saved = localStorage.getItem('pd2_market_tab');
+        if (TAB_SECTIONS[saved]) return saved;
+    } catch {}
+    return 'browse';
+}
+
 function switchTab(tab) {
     for (const [key, sectionId] of Object.entries(TAB_SECTIONS)) {
         document.getElementById(sectionId).hidden = key !== tab;
         document.querySelector(`.market-tab[data-tab="${key}"]`).classList.toggle('active', key === tab);
     }
+    try { localStorage.setItem('pd2_market_tab', tab); } catch {}
+    history.replaceState(null, '', tab === 'browse' ? window.location.pathname : `#${tab}`);
     if (tab === 'sell' && document.getElementById('showSkinsToggle').checked && !inventoryLoaded) {
         importInventory();
     }
@@ -386,11 +430,22 @@ document.addEventListener('DOMContentLoaded', () => {
         skinsToggle.checked = localStorage.getItem('pd2_show_skins') === '1' && !!getSavedUser();
     } catch {}
     initNoteCounter();
+    document.getElementById('invFilter').addEventListener('input', onInvFilter);
+    // Press "/" anywhere on the Browse tab to jump into the search box
+    document.addEventListener('keydown', e => {
+        if (e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey) return;
+        const active = document.activeElement;
+        if (active && (active.tagName === 'INPUT' || active.tagName === 'SELECT' || active.tagName === 'TEXTAREA')) return;
+        if (document.getElementById('listings').hidden) return;
+        e.preventDefault();
+        document.getElementById('searchInput').focus();
+    });
     document.getElementById('sortSelect').addEventListener('change', loadListings);
     document.getElementById('searchInput').addEventListener('input', () => {
         clearTimeout(searchTimer);
         searchTimer = setTimeout(loadListings, 300);
     });
 
+    switchTab(initialTab());
     loadListings();
 });
