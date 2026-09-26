@@ -50,6 +50,9 @@ function createListingCard(listing, currentUser) {
     if (listing.condition) {
         tags.append(el('span', 'card-tag condition-tag', listing.condition));
     }
+    if (listing.statBoost) {
+        tags.append(el('span', 'card-tag condition-tag', 'Stat Boost'));
+    }
 
     card.append(
         tags,
@@ -219,7 +222,7 @@ function renderInventoryGrid(items) {
         if (item.color && /^#[0-9a-f]{6}$/i.test(item.color)) name.style.color = item.color;
         tile.append(name);
 
-        const metaParts = [item.condition, item.rarity, item.count > 1 ? `×${item.count}` : null].filter(Boolean);
+        const metaParts = [item.condition, item.rarity, item.statBoost ? 'Stat Boost' : null, item.count > 1 ? `×${item.count}` : null].filter(Boolean);
         if (metaParts.length) tile.append(el('div', 'inv-meta', metaParts.join(' · ')));
 
         const choose = () => selectInvItem(item, tile);
