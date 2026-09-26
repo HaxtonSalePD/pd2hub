@@ -44,10 +44,12 @@ function createListingCard(listing, currentUser) {
     }
 
     const tags = el('div', 'listing-tags');
-    tags.append(
-        el('span', 'card-tag rarity-tag', listing.rarity),
-        el('span', 'card-tag condition-tag', listing.condition)
-    );
+    if (listing.rarity) {
+        tags.append(el('span', 'card-tag rarity-tag', listing.rarity));
+    }
+    if (listing.condition) {
+        tags.append(el('span', 'card-tag condition-tag', listing.condition));
+    }
 
     card.append(
         tags,
@@ -139,6 +141,11 @@ async function handleListingSubmit(event) {
         return;
     }
 
+    if (!selectedInvItem) {
+        showToast('Pick a skin from your inventory first.');
+        return;
+    }
+
     const form = event.target;
     const submitBtn = form.querySelector('button[type="submit"]');
     submitBtn.disabled = true;
@@ -147,9 +154,7 @@ async function handleListingSubmit(event) {
         const data = await apiRequest('/api/listings', {
             method: 'POST',
             body: JSON.stringify({
-                itemName: document.getElementById('itemName').value,
-                condition: document.getElementById('itemCondition').value,
-                rarity: document.getElementById('itemRarity').value,
+                itemName: selectedInvItem.name,
                 price: document.getElementById('itemPrice').value,
                 note: document.getElementById('itemNote').value,
                 tradeLink: document.getElementById('sellerTradeLink').value.trim()
@@ -157,8 +162,11 @@ async function handleListingSubmit(event) {
         });
         showToast(data.message || 'Your skin is now listed!');
 
-        // Keep the trade link filled in so listing several skins is quicker
-        ['itemName', 'itemPrice', 'itemNote'].forEach(id => {
+        // Clear the selection so the next listing is a conscious pick; the trade link stays
+        selectedInvItem = null;
+        document.querySelectorAll('.inv-tile.selected').forEach(t => t.classList.remove('selected'));
+        document.getElementById('selectedItemBox').style.display = 'none';
+        ['itemPrice', 'itemNote'].forEach(id => {
             document.getElementById(id).value = '';
         });
         loadListings();
@@ -188,17 +196,71 @@ async function reportListing(listingId) {
     }
 }
 
-// --- STEAM INVENTORY IMPORT ---
+// --- STEAM INVENTORY GRID ---
+let selectedInvItem = null;
+
+function renderInventoryGrid(items) {
+    const grid = document.getElementById('inventoryGrid');
+    grid.replaceChildren(...items.map(item => {
+        const tile = el('div', 'inv-tile');
+        tile.setAttribute('role', 'option');
+        tile.tabIndex = 0;
+
+        if (item.image) {
+            const img = el('img');
+            img.src = item.image;
+            img.alt = '';
+            img.loading = 'lazy';
+            tile.append(img);
+        }
+        const name = el('div', 'inv-name', item.name);
+        if (item.color && /^#[0-9a-f]{6}$/i.test(item.color)) name.style.color = item.color;
+        tile.append(name);
+
+        const metaParts = [item.condition, item.rarity, item.count > 1 ? `×${item.count}` : null].filter(Boolean);
+        if (metaParts.length) tile.append(el('div', 'inv-meta', metaParts.join(' · ')));
+
+        const choose = () => selectInvItem(item, tile);
+        tile.addEventListener('click', choose);
+        tile.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); choose(); } });
+        return tile;
+    }));
+    grid.style.display = 'grid';
+}
+
+function selectInvItem(item, tile) {
+    selectedInvItem = item;
+    document.querySelectorAll('.inv-tile.selected').forEach(t => t.classList.remove('selected'));
+    tile.classList.add('selected');
+
+    const panel = document.getElementById('selectedItemPanel');
+    panel.replaceChildren();
+    if (item.image) {
+        const img = el('img');
+        img.src = item.image;
+        img.alt = '';
+        panel.append(img);
+    }
+    const info = el('div');
+    const name = el('div', 'inv-name', item.name);
+    name.style.fontSize = '1rem';
+    if (item.color && /^#[0-9a-f]{6}$/i.test(item.color)) name.style.color = item.color;
+    info.append(name);
+    const metaParts = [item.condition, item.rarity].filter(Boolean);
+    if (metaParts.length) info.append(el('div', 'inv-meta', metaParts.join(' · ')));
+    panel.append(info);
+    document.getElementById('selectedItemBox').style.display = 'block';
+}
+
 async function importInventory() {
     if (!getSavedUser()) {
-        showToast('Please sign in with Steam first to import your inventory.');
+        showToast('Please sign in with Steam first to see your skins.');
         return;
     }
     const btn = document.getElementById('importInventoryBtn');
-    const select = document.getElementById('inventorySelect');
     const hint = document.getElementById('importHint');
     btn.disabled = true;
-    hint.textContent = 'Loading your inventory… (this can take a few seconds)';
+    hint.textContent = 'Opening your stash… (this can take a few seconds)';
 
     try {
         const data = await apiRequest('/api/inventory');
@@ -206,30 +268,14 @@ async function importInventory() {
             hint.textContent = 'No tradable PAYDAY 2 items found in your inventory.';
             return;
         }
-        select.replaceChildren(new Option(`Choose one of your ${data.items.length} items…`, ''));
-        data.items.forEach((item, i) => {
-            const label = (item.count > 1 ? `${item.name} ×${item.count}` : item.name)
-                + (item.condition ? ` (${item.condition})` : '');
-            select.append(new Option(label, String(i)));
-        });
-        select._items = data.items;
-        select.style.display = 'block';
-        hint.textContent = 'Picking an item fills in the form below — you can still edit everything.';
+        renderInventoryGrid(data.items);
+        hint.textContent = `${data.items.length} items — click one to select it. Name, condition and rarity are locked to Steam’s data.`;
     } catch (err) {
-        hint.textContent = 'Import failed — you can type the skin name manually.';
+        hint.textContent = 'Could not load your inventory — make sure it is set to public, then try again.';
         showToast(err.message);
     } finally {
         btn.disabled = false;
     }
-}
-
-function applyInventoryChoice() {
-    const select = document.getElementById('inventorySelect');
-    const item = select._items?.[Number(select.value)];
-    if (!item) return;
-    document.getElementById('itemName').value = item.name;
-    if (item.condition) document.getElementById('itemCondition').value = item.condition;
-    if (item.rarity) document.getElementById('itemRarity').value = item.rarity;
 }
 
 async function removeListing(listingId) {
@@ -252,7 +298,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('listingForm').addEventListener('submit', handleListingSubmit);
     document.getElementById('importInventoryBtn').addEventListener('click', importInventory);
-    document.getElementById('inventorySelect').addEventListener('change', applyInventoryChoice);
     document.getElementById('sortSelect').addEventListener('change', loadListings);
     document.getElementById('searchInput').addEventListener('input', () => {
         clearTimeout(searchTimer);
