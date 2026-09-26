@@ -63,9 +63,6 @@ function createListingCard(listing, currentUser) {
     if (listing.statBoost) {
         tags.append(el('span', 'card-tag condition-tag', 'Stat Boost'));
     }
-    if (listing.verified) {
-        tags.append(el('span', 'card-tag verified-tag', '✓ Verified'));
-    }
     if (currentUser && currentUser.steamId === listing.sellerSteamId) {
         tags.append(el('span', 'card-tag mine-tag', 'Your listing'));
     }
