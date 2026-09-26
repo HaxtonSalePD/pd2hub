@@ -279,6 +279,56 @@
             color: var(--text-main);
         }
 
+        .inv-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            max-height: 420px;
+            overflow-y: auto;
+            padding: 0.25rem;
+        }
+
+        .inv-tile {
+            background-color: var(--bg-dark);
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            padding: 0.6rem;
+            cursor: pointer;
+            text-align: center;
+            transition: border-color 0.15s ease, transform 0.15s ease;
+        }
+
+        .inv-tile:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+        }
+
+        .inv-tile.selected {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 10px rgba(255, 194, 26, 0.35);
+        }
+
+        .inv-tile img {
+            width: 100%;
+            height: 64px;
+            object-fit: contain;
+            margin-bottom: 0.4rem;
+        }
+
+        .inv-name {
+            font-weight: 600;
+            font-size: 0.82rem;
+            line-height: 1.25;
+            overflow-wrap: anywhere;
+        }
+
+        .inv-meta {
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            margin-top: 0.25rem;
+        }
+
         .btn-submit {
             display: block;
             width: 100%;
@@ -500,6 +550,10 @@
             <section>
                 <h2 class="section-title">Start New Giveaway</h2>
                 <div class="card">
+                    <button type="button" class="btn-submit" id="pickPrizeBtn" style="margin-bottom: 0.75rem;">📦 Pick a Skin from My Inventory</button>
+                    <p class="winner-meta" id="prizePickHint" style="margin-bottom: 1rem;">Picking a skin shows its picture and colors on the giveaway page. Or just type a prize name below.</p>
+                    <div class="inv-grid" id="prizeGrid" style="display: none;"></div>
+
                     <label for="newPrizeName" style="display:block; font-weight:bold; font-size:0.9rem; text-transform:uppercase; margin-bottom:0.4rem;">New prize name</label>
                     <input type="text" class="admin-input" id="newPrizeName" placeholder="e.g. Battle-Worn Legendary Sputnik Safe Skin" minlength="3" maxlength="80">
                     <button type="button" class="btn-submit btn-danger" id="startGiveawayBtn">Start New Giveaway</button>

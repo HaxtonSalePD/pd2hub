@@ -225,6 +225,21 @@ async function loadGiveawayInfo() {
     try {
         const data = await apiRequest('/api/giveaway');
         prizeEl.textContent = data.prizeName;
+        if (typeof data.prizeColor === 'string' && /^#[0-9a-f]{6}$/i.test(data.prizeColor)) {
+            prizeEl.style.color = data.prizeColor;
+        }
+        const imgEl = document.getElementById('prizeImage');
+        if (imgEl && typeof data.prizeImage === 'string'
+            && data.prizeImage.startsWith('https://community.cloudflare.steamstatic.com/economy/image/')) {
+            imgEl.src = data.prizeImage;
+            imgEl.style.display = 'block';
+        }
+        const metaEl = document.getElementById('prizeMeta');
+        const metaParts = [data.prizeCondition, data.prizeRarity, data.prizeStatBoost ? 'Stat Boost' : null].filter(Boolean);
+        if (metaEl && metaParts.length) {
+            metaEl.textContent = metaParts.join(' · ');
+            metaEl.style.display = 'block';
+        }
         const countEl = document.getElementById('giveawayEntryCount');
         if (countEl) {
             countEl.textContent = data.totalEntries === 1
