@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Community Giveaways | PD2Hub Central</title>
     <meta name="description" content="Enter the monthly PAYDAY 2 weapon skin giveaway. Sign in with Steam, drop your trade URL, and you're in the drawing.">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Monthly PAYDAY 2 Skin Giveaway – PD2Hub Central">
+    <meta property="og:description" content="Sign in with Steam, drop your trade URL, and you're in the drawing. Free to enter.">
+    <meta property="og:url" content="https://haxtonsalepd.github.io/pd2hub/giveaway.html">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
     <style>
         :root {
@@ -270,6 +274,21 @@
             transform: translateY(0);
         }
 
+        a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+            outline: 2px solid var(--accent-blue);
+            outline-offset: 2px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation: none !important;
+                transition: none !important;
+            }
+            html {
+                scroll-behavior: auto;
+            }
+        }
+
         footer {
             text-align: center;
             padding: 2rem;
@@ -329,6 +348,15 @@
                     <button type="submit" class="btn-submit">Enter Giveaway</button>
                 </form>
             </div>
+
+            <div class="card">
+                <h3 style="color: var(--accent-blue); margin-bottom: 0.75rem;">How It Works</h3>
+                <ol style="padding-left: 1.2rem; color: var(--text-muted);">
+                    <li style="margin-bottom: 0.5rem;"><strong>Sign in through Steam.</strong> We only ever see your public profile name, avatar and Steam ID — never your password or your items.</li>
+                    <li style="margin-bottom: 0.5rem;"><strong>Paste your Trade URL and enter.</strong> One entry per Steam account. Entering is always free.</li>
+                    <li><strong>A winner is drawn at random</strong> at the end of the month and receives the prize as a normal Steam trade offer. We will never ask a winner to send items, money or codes first — anyone who does is a scammer.</li>
+                </ol>
+            </div>
         </section>
 
     </div>
@@ -336,6 +364,12 @@
     <div id="toast" class="toast" role="status" aria-live="polite">Action completed successfully!</div>
 
     <footer>
+        <p style="margin-bottom: 0.5rem;">
+            <a href="index.html" style="color: var(--text-muted);">Home</a> &middot;
+            <a href="trade.html" style="color: var(--text-muted);">Trading</a> &middot;
+            <a href="market.html" style="color: var(--text-muted);">Market</a> &middot;
+            <a href="giveaway.html" style="color: var(--text-muted);">Giveaway</a>
+        </p>
         <p>This is a fan-created site. PAYDAY 2 is a registered trademark of Starbreeze Studios AB. All assets belong to their respective owners.</p>
     </footer>
 

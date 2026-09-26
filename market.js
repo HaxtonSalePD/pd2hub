@@ -100,7 +100,9 @@ async function loadListings() {
         const currentUser = getSavedUser();
         grid.replaceChildren(...listings.map(listing => createListingCard(listing, currentUser)));
         status.textContent = listings.length === 0
-            ? 'No listings found.'
+            ? (params.get('search')
+                ? 'No listings match your search.'
+                : 'No skins listed right now — sign in with Steam and be the first!')
             : `${listings.length} listing${listings.length === 1 ? '' : 's'}`;
     } catch (err) {
         if (requestId !== latestRequestId) return;

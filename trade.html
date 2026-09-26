@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trade Skins | PD2Hub Central</title>
     <meta name="description" content="Where to trade PAYDAY 2 skins safely: Steam Community Market, trading forums, Reddit, and the PD2Hub skin market, plus a safe trading checklist.">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Trade PAYDAY 2 Skins – PD2Hub Central">
+    <meta property="og:description" content="Where to trade PAYDAY 2 skins safely, plus a safe trading checklist.">
+    <meta property="og:url" content="https://haxtonsalepd.github.io/pd2hub/trade.html">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
     <style>
         :root {
@@ -250,6 +254,21 @@
             transform: translateY(0);
         }
 
+        a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+            outline: 2px solid var(--accent-blue);
+            outline-offset: 2px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation: none !important;
+                transition: none !important;
+            }
+            html {
+                scroll-behavior: auto;
+            }
+        }
+
         footer {
             text-align: center;
             padding: 2rem;
@@ -334,6 +353,12 @@
     <div id="toast" class="toast" role="status" aria-live="polite">Action completed successfully!</div>
 
     <footer>
+        <p style="margin-bottom: 0.5rem;">
+            <a href="index.html" style="color: var(--text-muted);">Home</a> &middot;
+            <a href="trade.html" style="color: var(--text-muted);">Trading</a> &middot;
+            <a href="market.html" style="color: var(--text-muted);">Market</a> &middot;
+            <a href="giveaway.html" style="color: var(--text-muted);">Giveaway</a>
+        </p>
         <p>This is a fan-created site. PAYDAY 2 is a registered trademark of Starbreeze Studios AB. All assets belong to their respective owners.</p>
     </footer>
 
