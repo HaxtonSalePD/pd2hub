@@ -69,12 +69,18 @@ function createListingCard(listing, currentUser) {
         removeBtn.type = 'button';
         removeBtn.addEventListener('click', () => removeListing(listing.id));
         actions.append(removeBtn);
-    } else if (listing.tradeLink && listing.tradeLink.startsWith('https://steamcommunity.com/tradeoffer/new/')) {
-        const tradeBtn = el('a', 'btn-trade-offer', 'Send Trade Offer');
-        tradeBtn.href = listing.tradeLink;
-        tradeBtn.target = '_blank';
-        tradeBtn.rel = 'noopener noreferrer';
-        actions.append(tradeBtn);
+    } else {
+        if (listing.tradeLink && listing.tradeLink.startsWith('https://steamcommunity.com/tradeoffer/new/')) {
+            const tradeBtn = el('a', 'btn-trade-offer', 'Send Trade Offer');
+            tradeBtn.href = listing.tradeLink;
+            tradeBtn.target = '_blank';
+            tradeBtn.rel = 'noopener noreferrer';
+            actions.append(tradeBtn);
+        }
+        const reportBtn = el('button', 'btn-report', '⚠ Report this listing');
+        reportBtn.type = 'button';
+        reportBtn.addEventListener('click', () => reportListing(listing.id));
+        actions.append(reportBtn);
     }
     card.append(actions);
 
@@ -148,6 +154,69 @@ async function handleListingSubmit(event) {
     }
 }
 
+async function reportListing(listingId) {
+    if (!getSavedUser()) {
+        showToast('Please sign in with Steam first to report a listing.');
+        return;
+    }
+    const reason = prompt('Why are you reporting this listing? (optional)');
+    if (reason === null) return; // cancelled
+
+    try {
+        const data = await apiRequest(`/api/listings/${encodeURIComponent(listingId)}/report`, {
+            method: 'POST',
+            body: JSON.stringify({ reason: reason.trim().slice(0, 140) })
+        });
+        showToast(data.message || 'Report received.');
+    } catch (err) {
+        showToast(err.message);
+    }
+}
+
+// --- STEAM INVENTORY IMPORT ---
+async function importInventory() {
+    if (!getSavedUser()) {
+        showToast('Please sign in with Steam first to import your inventory.');
+        return;
+    }
+    const btn = document.getElementById('importInventoryBtn');
+    const select = document.getElementById('inventorySelect');
+    const hint = document.getElementById('importHint');
+    btn.disabled = true;
+    hint.textContent = 'Loading your inventory… (this can take a few seconds)';
+
+    try {
+        const data = await apiRequest('/api/inventory');
+        if (data.items.length === 0) {
+            hint.textContent = 'No tradable PAYDAY 2 items found in your inventory.';
+            return;
+        }
+        select.replaceChildren(new Option(`Choose one of your ${data.items.length} items…`, ''));
+        data.items.forEach((item, i) => {
+            const label = (item.count > 1 ? `${item.name} ×${item.count}` : item.name)
+                + (item.condition ? ` (${item.condition})` : '');
+            select.append(new Option(label, String(i)));
+        });
+        select._items = data.items;
+        select.style.display = 'block';
+        hint.textContent = 'Picking an item fills in the form below — you can still edit everything.';
+    } catch (err) {
+        hint.textContent = 'Import failed — you can type the skin name manually.';
+        showToast(err.message);
+    } finally {
+        btn.disabled = false;
+    }
+}
+
+function applyInventoryChoice() {
+    const select = document.getElementById('inventorySelect');
+    const item = select._items?.[Number(select.value)];
+    if (!item) return;
+    document.getElementById('itemName').value = item.name;
+    if (item.condition) document.getElementById('itemCondition').value = item.condition;
+    if (item.rarity) document.getElementById('itemRarity').value = item.rarity;
+}
+
 async function removeListing(listingId) {
     if (!confirm('Remove this listing?')) return;
 
@@ -167,6 +236,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     document.getElementById('listingForm').addEventListener('submit', handleListingSubmit);
+    document.getElementById('importInventoryBtn').addEventListener('click', importInventory);
+    document.getElementById('inventorySelect').addEventListener('change', applyInventoryChoice);
     document.getElementById('sortSelect').addEventListener('change', loadListings);
     document.getElementById('searchInput').addEventListener('input', () => {
         clearTimeout(searchTimer);
