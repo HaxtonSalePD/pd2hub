@@ -28,6 +28,21 @@ function createListingCard(listing, currentUser) {
     const rarityClass = RARITY_CLASSES[listing.rarity] || 'common';
     const card = el('div', `card listing-card rarity-${rarityClass}`);
 
+    // Steam's official color for this exact item wins over the generic rarity palette
+    if (typeof listing.rarityColor === 'string' && /^#[0-9a-f]{6}$/i.test(listing.rarityColor)) {
+        card.style.setProperty('--rarity-color', listing.rarityColor);
+    }
+
+    // The item's own Steam icon, when the listing was verified against the inventory
+    if (typeof listing.imageUrl === 'string'
+        && listing.imageUrl.startsWith('https://community.cloudflare.steamstatic.com/economy/image/')) {
+        const img = el('img', 'listing-img');
+        img.src = listing.imageUrl;
+        img.alt = '';
+        img.loading = 'lazy';
+        card.append(img);
+    }
+
     const tags = el('div', 'listing-tags');
     tags.append(
         el('span', 'card-tag rarity-tag', listing.rarity),
