@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>Giveaway Admin | PD2Hub Central</title>
+    <style>
+        :root {
+            --bg-dark: #0a0a0c;
+            --card-bg: #16161a;
+            --accent-blue: #00a8ff;
+            --accent-red: #ff3333;
+            --accent-gold: #ffb300;
+            --text-main: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --nav-bg: #111111;
+            --border-color: #2a2a30;
+        }
+
+        body.light-theme {
+            --bg-dark: #f0f2f5;
+            --card-bg: #ffffff;
+            --accent-blue: #0077cc;
+            --accent-red: #d92626;
+            --accent-gold: #b26a00;
+            --text-main: #1c1e21;
+            --text-muted: #606770;
+            --nav-bg: #e4e6eb;
+            --border-color: #cccccc;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        header {
+            background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.95)),
+                        radial-gradient(circle, #1a2a3a 0%, #0a0a0c 100%);
+            border-bottom: 3px solid var(--accent-blue);
+            padding: 2.5rem 1rem;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            letter-spacing: 4px;
+            color: #fff;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(0, 168, 255, 0.5);
+        }
+
+        header p {
+            color: var(--accent-blue);
+            font-weight: 600;
+            letter-spacing: 2px;
+            margin-top: 0.5rem;
+        }
+
+        nav {
+            background-color: var(--nav-bg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        nav a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        nav a:hover {
+            color: var(--accent-blue);
+            background-color: rgba(0, 168, 255, 0.1);
+        }
+
+        .nav-toggle {
+            display: none;
+            background: transparent;
+            border: 2px solid var(--accent-blue);
+            color: var(--text-main);
+            font-size: 1.2rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .theme-toggle-btn {
+            background: transparent;
+            border: 2px solid var(--accent-blue);
+            color: var(--text-main);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .theme-toggle-btn:hover {
+            background-color: var(--accent-blue);
+            color: #000;
+        }
+
+        @media (max-width: 768px) {
+            .nav-toggle {
+                display: block;
+            }
+
+            nav {
+                flex-wrap: wrap;
+            }
+
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                gap: 0.5rem;
+                padding-top: 1rem;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .nav-links a {
+                width: 100%;
+                text-align: center;
+                padding: 0.6rem;
+            }
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            border-left: 4px solid var(--accent-blue);
+            padding-left: 0.75rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .admin-status {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .entry-count {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--accent-blue);
+            line-height: 1;
+        }
+
+        .entry-count-label {
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-bottom: 1.5rem;
+        }
+
+        .draw-help {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 0.75rem;
+        }
+
+        .btn-submit {
+            display: block;
+            width: 100%;
+            background-color: var(--accent-blue);
+            color: #000;
+            font-weight: bold;
+            font-size: 1rem;
+            text-transform: uppercase;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-submit:hover {
+            background-color: #fff;
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 0 4px 12px rgba(0, 168, 255, 0.4);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        .winner-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .winner-row:last-child {
+            border-bottom: none;
+        }
+
+        .winner-row.latest {
+            border: 2px solid var(--accent-gold);
+            border-radius: 6px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .winner-row img {
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .winner-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .winner-name {
+            color: var(--text-main);
+            font-weight: bold;
+            text-decoration: none;
+            overflow-wrap: anywhere;
+        }
+
+        .winner-name:hover {
+            color: var(--accent-blue);
+        }
+
+        .winner-badge {
+            display: inline-block;
+            color: var(--accent-gold);
+            font-size: 0.75rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-left: 0.5rem;
+        }
+
+        .winner-meta {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .btn-trade-offer {
+            flex-shrink: 0;
+            background-color: var(--accent-blue);
+            color: #000;
+            font-weight: bold;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            text-decoration: none;
+            padding: 0.5rem 0.8rem;
+            border-radius: 4px;
+        }
+
+        .btn-trade-offer:hover {
+            background-color: #fff;
+        }
+
+        @media (max-width: 600px) {
+            .winner-row {
+                flex-wrap: wrap;
+            }
+
+            .btn-trade-offer {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            border: 2px solid var(--accent-blue);
+            padding: 1rem 1.5rem;
+            border-radius: 6px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            z-index: 2000;
+        }
+
+        .toast.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background-color: var(--nav-bg);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Giveaway Admin</h1>
+        <p>Draw Winners & Review Past Draws</p>
+    </header>
+
+    <nav>
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">☰</button>
+        <div class="nav-links" id="navLinks">
+            <a href="index.html">Home</a>
+            <a href="trade.html">Trading</a>
+            <a href="market.html">Market</a>
+            <a href="giveaway.html">Giveaway</a>
+        </div>
+        <div style="display: flex; gap: 0.5rem; align-items: center;" id="navAuthContainer">
+            <a href="https://pd2hub-backend.onrender.com/auth/steam?returnTo=admin" class="steam-login-btn" id="steamAuthBtn">
+                <img src="https://community.cloudflare.steamstatic.com/public/images/signinthroughsteam/sits_01.png" alt="Sign in through STEAM" style="vertical-align: middle;">
+            </a>
+            <button class="theme-toggle-btn" id="themeToggleBtn">☀️ Light Mode</button>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <p class="admin-status" id="adminStatus"></p>
+
+        <div id="adminPanel" hidden>
+            <section>
+                <h2 class="section-title">Draw a Winner</h2>
+                <div class="card">
+                    <p class="entry-count" id="entryCount">0</p>
+                    <p class="entry-count-label">Giveaway entries</p>
+
+                    <button type="button" class="btn-submit" id="drawBtn">Draw Winner</button>
+                    <p class="draw-help">
+                        Every entry has the same chance. Past winners are skipped, so if a winner never
+                        accepts the trade you can draw again to pick someone new.
+                    </p>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="section-title">Past Draws</h2>
+                <div class="card" id="winnersList"></div>
+            </section>
+        </div>
+
+    </div>
+
+    <div id="toast" class="toast">Action completed successfully!</div>
+
+    <footer>
+        <p>This is a fan-created site. PAYDAY 2 is a registered trademark of Starbreeze Studios AB. All assets belong to their respective owners.</p>
+    </footer>
+
+    <script src="main.js"></script>
+    <script src="admin.js"></script>
+
+</body>
+</html>
