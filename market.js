@@ -43,7 +43,7 @@ function createListingCard(listing, currentUser) {
         card.style.setProperty('--rarity-color', listing.rarityColor);
     }
 
-    // The item's own Steam icon, when the listing was verified against the inventory
+    // The item's Steam icon, captured during the inventory check at listing time
     if (typeof listing.imageUrl === 'string'
         && listing.imageUrl.startsWith('https://community.cloudflare.steamstatic.com/economy/image/')) {
         const img = el('img', 'listing-img');
