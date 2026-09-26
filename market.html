@@ -407,6 +407,54 @@
         }
 
         /* --- LISTINGS --- */
+        .market-tabs {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .market-tab {
+            background: transparent;
+            border: 2px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 0.55rem 1.2rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            transition: all 0.2s ease;
+        }
+
+        .market-tab:hover {
+            border-color: var(--accent-blue);
+            color: var(--text-main);
+        }
+
+        .market-tab.active {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+            background-color: rgba(255, 194, 26, 0.08);
+        }
+
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .toggle-row input {
+            width: 1.15rem;
+            height: 1.15rem;
+            accent-color: var(--accent-blue);
+            cursor: pointer;
+        }
+
         .toolbar {
             display: grid;
             grid-template-columns: 1fr 220px;
@@ -689,7 +737,13 @@
             from the seller’s Steam inventory — sellers only set the asking value.
         </div>
 
-        <section id="sell">
+        <div class="market-tabs" role="tablist">
+            <button type="button" class="market-tab active" data-tab="browse">Browse Listings</button>
+            <button type="button" class="market-tab" data-tab="sell">Sell a Skin</button>
+            <button type="button" class="market-tab" data-tab="mine">My Listings</button>
+        </div>
+
+        <section id="sell" hidden>
             <h2 class="section-title">Sell a Skin</h2>
 
             <div class="card">
@@ -697,10 +751,13 @@
 
                 <form id="listingForm">
                     <div class="form-group">
-                        <button type="button" class="btn-import" id="importInventoryBtn">📦 Show My Skins</button>
+                        <label class="toggle-row">
+                            <input type="checkbox" id="showSkinsToggle">
+                            <span>Show my skins from Steam</span>
+                        </label>
                         <p class="form-help" id="importHint" style="margin: 0.4rem 0 0;">
-                            Pick the skin straight from your Steam inventory — name, condition, rarity and picture
-                            are locked to what Steam says. Your inventory must be set to public.
+                            Turn the toggle on to load your skins. Name, condition, rarity and picture are locked
+                            to what Steam says, and your inventory must be set to public.
                         </p>
                         <div class="inv-grid" id="inventoryGrid" style="display: none;" role="listbox" aria-label="Your PAYDAY 2 items"></div>
                     </div>
@@ -724,7 +781,8 @@
 
                     <div class="form-group">
                         <label for="itemNote">Note (optional)</label>
-                        <input type="text" id="itemNote" placeholder="e.g. Stat boost: +1 Concealment, open to offers" maxlength="200" autocomplete="off">
+                        <input type="text" id="itemNote" placeholder="e.g. Stat boost: +1 Concealment, open to offers" maxlength="140" autocomplete="off" aria-describedby="noteCounter">
+                        <p class="form-help" id="noteCounter" style="margin: 0.3rem 0 0;">0/140</p>
                     </div>
 
                     <div class="form-group">
@@ -752,6 +810,12 @@
 
             <p class="listings-status" id="listingsStatus"></p>
             <div class="grid" id="listingsGrid"></div>
+        </section>
+
+        <section id="mylistings" hidden>
+            <h2 class="section-title">My Active Listings</h2>
+            <p class="listings-status" id="myListingsStatus"></p>
+            <div class="grid" id="myListingsGrid"></div>
         </section>
 
     </div>

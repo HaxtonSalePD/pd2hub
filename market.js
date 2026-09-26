@@ -169,6 +169,8 @@ async function handleListingSubmit(event) {
         ['itemPrice', 'itemNote'].forEach(id => {
             document.getElementById(id).value = '';
         });
+        document.getElementById('noteCounter').textContent = '0/140';
+        myListingsLoaded = false;
         loadListings();
     } catch (err) {
         showToast(err.message);
@@ -252,6 +254,8 @@ function selectInvItem(item, tile) {
     document.getElementById('selectedItemBox').style.display = 'block';
 }
 
+let inventoryLoaded = false;
+
 async function importInventory() {
     if (!getSavedUser()) {
         showToast('Please sign in with Steam first to see your skins.');
@@ -263,9 +267,7 @@ async function importInventory() {
         showToast('The site just updated — please refresh the page (Ctrl+F5) and try again.');
         return;
     }
-    const btn = document.getElementById('importInventoryBtn');
     const hint = document.getElementById('importHint');
-    btn.disabled = true;
     hint.textContent = 'Opening your stash… (this can take a few seconds)';
 
     try {
@@ -275,13 +277,78 @@ async function importInventory() {
             return;
         }
         renderInventoryGrid(data.items);
+        inventoryLoaded = true;
         hint.textContent = `${data.items.length} items — click one to select it. Name, condition and rarity are locked to Steam’s data.`;
     } catch (err) {
         hint.textContent = 'Could not load your inventory — make sure it is set to public, then try again.';
         showToast(err.message);
-    } finally {
-        btn.disabled = false;
     }
+}
+
+// The toggle decides whether the user's skins are loaded and shown at all.
+// The choice is remembered on this device.
+function onSkinsToggle() {
+    const toggle = document.getElementById('showSkinsToggle');
+    if (toggle.checked && !getSavedUser()) {
+        toggle.checked = false;
+        showToast('Please sign in with Steam first to see your skins.');
+        return;
+    }
+    try { localStorage.setItem('pd2_show_skins', toggle.checked ? '1' : '0'); } catch {}
+    if (toggle.checked) {
+        importInventory();
+    } else {
+        document.getElementById('inventoryGrid').style.display = 'none';
+        document.getElementById('importHint').textContent = 'Turn the toggle on to load your skins from Steam.';
+    }
+}
+
+// --- MARKET TABS ---
+const TAB_SECTIONS = { browse: 'listings', sell: 'sell', mine: 'mylistings' };
+let myListingsLoaded = false;
+
+function switchTab(tab) {
+    for (const [key, sectionId] of Object.entries(TAB_SECTIONS)) {
+        document.getElementById(sectionId).hidden = key !== tab;
+        document.querySelector(`.market-tab[data-tab="${key}"]`).classList.toggle('active', key === tab);
+    }
+    if (tab === 'sell' && document.getElementById('showSkinsToggle').checked && !inventoryLoaded) {
+        importInventory();
+    }
+    if (tab === 'mine' && !myListingsLoaded) {
+        loadMyListings();
+    }
+}
+
+async function loadMyListings() {
+    const grid = document.getElementById('myListingsGrid');
+    const status = document.getElementById('myListingsStatus');
+    const currentUser = getSavedUser();
+    if (!currentUser) {
+        status.textContent = 'Sign in with Steam to see your listings.';
+        grid.replaceChildren();
+        return;
+    }
+    status.textContent = 'Fetching your listings…';
+    try {
+        const listings = await apiRequest('/api/listings/mine');
+        grid.replaceChildren(...listings.map(l => createListingCard(l, currentUser)));
+        myListingsLoaded = true;
+        status.textContent = listings.length === 0
+            ? 'You have nothing listed right now.'
+            : `${listings.length} active listing${listings.length === 1 ? '' : 's'}`;
+    } catch (err) {
+        status.textContent = err.message;
+    }
+}
+
+function initNoteCounter() {
+    const note = document.getElementById('itemNote');
+    const counter = document.getElementById('noteCounter');
+    if (!note || !counter) return;
+    const update = () => { counter.textContent = `${note.value.length}/140`; };
+    note.addEventListener('input', update);
+    update();
 }
 
 async function removeListing(listingId) {
@@ -290,7 +357,11 @@ async function removeListing(listingId) {
     try {
         const data = await apiRequest(`/api/listings/${encodeURIComponent(listingId)}`, { method: 'DELETE' });
         showToast(data.message || 'Listing removed.');
+        myListingsLoaded = false;
         loadListings();
+        if (!document.getElementById('mylistings').hidden) {
+            loadMyListings();
+        }
     } catch (err) {
         showToast(err.message);
     }
@@ -303,7 +374,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     document.getElementById('listingForm').addEventListener('submit', handleListingSubmit);
-    document.getElementById('importInventoryBtn').addEventListener('click', importInventory);
+    document.querySelectorAll('.market-tab').forEach(btn => {
+        btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+    });
+    const skinsToggle = document.getElementById('showSkinsToggle');
+    skinsToggle.addEventListener('change', onSkinsToggle);
+    try {
+        skinsToggle.checked = localStorage.getItem('pd2_show_skins') === '1' && !!getSavedUser();
+    } catch {}
+    initNoteCounter();
     document.getElementById('sortSelect').addEventListener('change', loadListings);
     document.getElementById('searchInput').addEventListener('input', () => {
         clearTimeout(searchTimer);
