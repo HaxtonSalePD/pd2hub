@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Skin Market | PD2Hub Central</title>
+    <meta name="description" content="List your PAYDAY 2 skins and browse community listings. Skins trade for skins of similar Steam Market value through normal Steam trade offers.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
     <style>
         :root {
             --bg-dark: #0a0a0c;
@@ -582,6 +584,7 @@
                     <div class="form-group">
                         <label for="sellerTradeLink">Your Steam Trade URL</label>
                         <input type="url" id="sellerTradeLink" placeholder="https://steamcommunity.com/tradeoffer/new/..." required autocomplete="off">
+                        <p style="margin-top: 0.4rem; font-size: 0.85rem;"><a href="https://steamcommunity.com/my/tradeoffers/privacy" target="_blank" rel="noopener noreferrer" style="color: var(--accent-blue);">Where do I find my Trade URL?</a></p>
                     </div>
 
                     <button type="submit" class="btn-submit">List Skin</button>
@@ -607,7 +610,7 @@
 
     </div>
 
-    <div id="toast" class="toast">Action completed successfully!</div>
+    <div id="toast" class="toast" role="status" aria-live="polite">Action completed successfully!</div>
 
     <footer>
         <p>This is a fan-created site. PAYDAY 2 is a registered trademark of Starbreeze Studios AB. All assets belong to their respective owners.</p>
