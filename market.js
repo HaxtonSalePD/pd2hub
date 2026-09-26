@@ -97,7 +97,7 @@ async function loadListings() {
 
     // Ignore older responses if the user keeps typing
     const requestId = ++latestRequestId;
-    status.textContent = 'Loading listings… (the server can take up to a minute to wake up)';
+    status.textContent = 'Opening the vault… (the free server wakes from its nap in under a minute)';
 
     try {
         const listings = await apiRequest(`/api/listings?${params}`);
@@ -108,7 +108,7 @@ async function loadListings() {
         status.textContent = listings.length === 0
             ? (params.get('search')
                 ? 'No listings match your search.'
-                : 'No skins listed right now — sign in with Steam and be the first!')
+                : 'The table’s empty — sign in and be the first to put loot on it.')
             : `${listings.length} listing${listings.length === 1 ? '' : 's'}`;
     } catch (err) {
         if (requestId !== latestRequestId) return;
