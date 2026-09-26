@@ -170,6 +170,7 @@ async function dismissReports(listingId) {
 
 // --- PRIZE PICKER ---
 let prizePool = []; // [{ item, quantity }]
+let prizeInvItems = [];
 
 function renderPrizePool() {
     const list = document.getElementById('prizePoolList');
@@ -192,6 +193,7 @@ function renderPrizePool() {
         removeBtn.addEventListener('click', () => {
             prizePool.splice(i, 1);
             renderPrizePool();
+            if (prizeInvItems.length) renderPrizeGrid(prizeInvItems);
         });
         row.append(removeBtn);
         return row;
@@ -201,6 +203,11 @@ function renderPrizePool() {
 function renderPrizeGrid(items) {
     const grid = document.getElementById('prizeGrid');
     grid.replaceChildren(...items.map(item => {
+        // item.available already excludes market listings and the RUNNING giveaway;
+        // also subtract what's sitting in the pool being built right now
+        const pooled = prizePool.find(entry => entry.item.name === item.name)?.quantity || 0;
+        const avail = (item.available ?? item.count) - pooled;
+        if (avail <= 0) return null;
         const tile = el('div', 'inv-tile');
         if (item.image) {
             const img = el('img');
@@ -212,7 +219,8 @@ function renderPrizeGrid(items) {
         const name = el('div', 'inv-name', item.name);
         if (item.color && /^#[0-9a-f]{6}$/i.test(item.color)) name.style.color = item.color;
         tile.append(name);
-        const metaParts = [item.condition, item.rarity, item.statBoost ? 'Stat Boost' : null].filter(Boolean);
+        const metaParts = [item.condition, item.rarity, item.statBoost ? 'Stat Boost' : null,
+            avail < item.count ? `${avail} of ${item.count} left` : (item.count > 1 ? `${item.count} left` : null)].filter(Boolean);
         if (metaParts.length) tile.append(el('div', 'inv-meta', metaParts.join(' · ')));
 
         tile.addEventListener('click', () => {
@@ -221,7 +229,7 @@ function renderPrizeGrid(items) {
                 return;
             }
             let quantity = 1;
-            const left = item.available ?? item.count;
+            const left = avail;
             if (left > 1) {
                 const answer = prompt(`How many? (you have ${left})`, '1');
                 if (answer === null) return;
@@ -233,11 +241,12 @@ function renderPrizeGrid(items) {
             }
             prizePool.push({ item, quantity });
             renderPrizePool();
+            renderPrizeGrid(prizeInvItems);
             document.getElementById('prizePickHint').textContent =
                 `${prizePool.length} item${prizePool.length === 1 ? '' : 's'} in the pool — add more, or start the giveaway.`;
         });
         return tile;
-    }));
+    }).filter(Boolean));
     grid.style.display = 'grid';
 }
 
@@ -250,7 +259,8 @@ async function loadPrizeInventory() {
             hint.textContent = 'No tradable PAYDAY 2 items found in your inventory.';
             return;
         }
-        renderPrizeGrid(data.items);
+        prizeInvItems = data.items;
+        renderPrizeGrid(prizeInvItems);
         hint.textContent = `${data.items.length} items — click one to make it the prize.`;
     } catch (err) {
         hint.textContent = 'Could not load your inventory — you can still type a prize name below.';
@@ -285,6 +295,7 @@ async function startNewGiveaway() {
         input.value = '';
         prizePool = [];
         renderPrizePool();
+        if (prizeInvItems.length) loadPrizeInventory();
         await loadGiveawayAdmin();
     } catch (err) {
         showToast(err.message);
