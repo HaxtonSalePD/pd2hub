@@ -257,6 +257,12 @@ async function importInventory() {
         showToast('Please sign in with Steam first to see your skins.');
         return;
     }
+    // Right after a deploy, the browser can hold an older copy of the page than of
+    // this script. Bail out with a hint instead of crashing on a missing container.
+    if (!document.getElementById('inventoryGrid') || !document.getElementById('selectedItemPanel')) {
+        showToast('The site just updated — please refresh the page (Ctrl+F5) and try again.');
+        return;
+    }
     const btn = document.getElementById('importInventoryBtn');
     const hint = document.getElementById('importHint');
     btn.disabled = true;
