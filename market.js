@@ -63,6 +63,9 @@ function createListingCard(listing, currentUser) {
     if (listing.statBoost) {
         tags.append(el('span', 'card-tag condition-tag', 'Stat Boost'));
     }
+    if (listing.quantity > 1) {
+        tags.append(el('span', 'card-tag mine-tag', `×${listing.quantity}`));
+    }
     if (currentUser && currentUser.steamId === listing.sellerSteamId) {
         tags.append(el('span', 'card-tag mine-tag', 'Your listing'));
     }
@@ -70,7 +73,7 @@ function createListingCard(listing, currentUser) {
     card.append(
         tags,
         el('h3', null, listing.itemName),
-        el('p', 'listing-price', formatPrice(listing.priceCents)),
+        el('p', 'listing-price', formatPrice(listing.priceCents) + (listing.quantity > 1 ? ' each' : '')),
         el('p', 'listing-price-label', 'Wants skins worth about this much')
     );
 
@@ -171,6 +174,7 @@ async function handleListingSubmit(event) {
             method: 'POST',
             body: JSON.stringify({
                 itemName: selectedInvItem.name,
+                quantity: Math.max(1, parseInt(document.getElementById('itemQty').value, 10) || 1),
                 price: document.getElementById('itemPrice').value,
                 note: document.getElementById('itemNote').value,
                 tradeLink: document.getElementById('sellerTradeLink').value.trim()
@@ -186,8 +190,11 @@ async function handleListingSubmit(event) {
             document.getElementById(id).value = '';
         });
         document.getElementById('noteCounter').textContent = '0/140';
+        document.getElementById('qtyGroup').style.display = 'none';
+        document.getElementById('itemQty').value = 1;
         myListingsLoaded = false;
         loadListings();
+        importInventory(); // refresh the grid so the remaining counts are right
     } catch (err) {
         showToast(err.message);
     } finally {
@@ -246,7 +253,9 @@ function drawInventoryTiles(items) {
         if (item.color && /^#[0-9a-f]{6}$/i.test(item.color)) name.style.color = item.color;
         tile.append(name);
 
-        const metaParts = [item.condition, item.rarity, item.statBoost ? 'Stat Boost' : null, item.count > 1 ? `×${item.count}` : null].filter(Boolean);
+        const left = item.available ?? item.count;
+        const metaParts = [item.condition, item.rarity, item.statBoost ? 'Stat Boost' : null,
+            left < item.count ? `${left} of ${item.count} left` : (item.count > 1 ? `${item.count} left` : null)].filter(Boolean);
         if (metaParts.length) tile.append(el('div', 'inv-meta', metaParts.join(' · ')));
 
         const choose = () => selectInvItem(item, tile);
@@ -284,6 +293,20 @@ function selectInvItem(item, tile) {
     if (metaParts.length) info.append(el('div', 'inv-meta', metaParts.join(' · ')));
     panel.append(info);
     document.getElementById('selectedItemBox').style.display = 'block';
+
+    // Stacks: let the seller pick how many to list
+    const left = item.available ?? item.count;
+    const qtyGroup = document.getElementById('qtyGroup');
+    const qtyInput = document.getElementById('itemQty');
+    if (left > 1) {
+        qtyGroup.style.display = 'block';
+        qtyInput.max = left;
+        qtyInput.value = 1;
+        document.getElementById('qtyLabel').textContent = `Quantity (max ${left})`;
+    } else {
+        qtyGroup.style.display = 'none';
+        qtyInput.value = 1;
+    }
 }
 
 let inventoryLoaded = false;
@@ -402,9 +425,13 @@ async function removeListing(listingId) {
         const data = await apiRequest(`/api/listings/${encodeURIComponent(listingId)}`, { method: 'DELETE' });
         showToast(data.message || 'Listing removed.');
         myListingsLoaded = false;
+        inventoryLoaded = false;
         loadListings();
         if (!document.getElementById('mylistings').hidden) {
             loadMyListings();
+        }
+        if (document.getElementById('showSkinsToggle').checked && !document.getElementById('sell').hidden) {
+            importInventory();
         }
     } catch (err) {
         showToast(err.message);

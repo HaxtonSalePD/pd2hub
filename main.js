@@ -200,9 +200,32 @@ async function renderAdminNavLink() {
 
 // Giveaway page: show a friendly "you're in" state instead of letting the user
 // discover via an error that they already entered
+// No running giveaway: hide the prize details and close the form
+function markGiveawayClosed() {
+    const prizeEl = document.getElementById('prizeName');
+    if (prizeEl) {
+        prizeEl.textContent = 'No active giveaway right now';
+        prizeEl.style.color = '';
+    }
+    const countEl = document.getElementById('giveawayEntryCount');
+    if (countEl) countEl.style.display = 'none';
+    const tradeInput = document.getElementById('tradelink');
+    if (!tradeInput) return;
+    tradeInput.disabled = true;
+    tradeInput.closest('form').dataset.closed = '1';
+    const btn = tradeInput.closest('form').querySelector('button[type="submit"]');
+    if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Check back soon!';
+        btn.style.opacity = '0.75';
+        btn.style.cursor = 'default';
+    }
+}
+
 function markGiveawayEntered() {
     const tradeInput = document.getElementById('tradelink');
     if (!tradeInput) return;
+    if (tradeInput.closest('form')?.dataset.closed === '1') return;
     const btn = tradeInput.closest('form')?.querySelector('button[type="submit"]');
     if (!btn) return;
     btn.disabled = true;
@@ -224,21 +247,64 @@ async function loadGiveawayInfo() {
     if (!prizeEl) return;
     try {
         const data = await apiRequest('/api/giveaway');
-        prizeEl.textContent = data.prizeName;
-        if (typeof data.prizeColor === 'string' && /^#[0-9a-f]{6}$/i.test(data.prizeColor)) {
-            prizeEl.style.color = data.prizeColor;
+
+        if (data.active === false) {
+            markGiveawayClosed();
+            return;
         }
+
         const imgEl = document.getElementById('prizeImage');
-        if (imgEl && typeof data.prizeImage === 'string'
-            && data.prizeImage.startsWith('https://community.cloudflare.steamstatic.com/economy/image/')) {
-            imgEl.src = data.prizeImage;
-            imgEl.style.display = 'block';
-        }
         const metaEl = document.getElementById('prizeMeta');
-        const metaParts = [data.prizeCondition, data.prizeRarity, data.prizeStatBoost ? 'Stat Boost' : null].filter(Boolean);
-        if (metaEl && metaParts.length) {
-            metaEl.textContent = metaParts.join(' · ');
-            metaEl.style.display = 'block';
+        const poolEl = document.getElementById('prizePool');
+
+        if (Array.isArray(data.prizes) && data.prizes.length > 1 && poolEl) {
+            // Several prizes: show the pool as a list
+            const total = data.prizes.reduce((sum, p) => sum + (p.quantity || 1), 0);
+            prizeEl.textContent = `Prize Pool — ${total} items`;
+            poolEl.replaceChildren(...data.prizes.map(p => {
+                const row = document.createElement('div');
+                row.style.cssText = 'display:flex;align-items:center;gap:0.8rem;padding:0.5rem 0;border-bottom:1px solid var(--border-color);';
+                if (typeof p.image === 'string' && p.image.startsWith('https://community.cloudflare.steamstatic.com/economy/image/')) {
+                    const img = document.createElement('img');
+                    img.src = p.image;
+                    img.alt = '';
+                    img.loading = 'lazy';
+                    img.style.cssText = 'width:72px;height:46px;object-fit:contain;flex-shrink:0;';
+                    row.append(img);
+                }
+                const info = document.createElement('div');
+                const name = document.createElement('div');
+                name.textContent = p.quantity > 1 ? `${p.name} ×${p.quantity}` : p.name;
+                name.style.fontWeight = '600';
+                if (typeof p.color === 'string' && /^#[0-9a-f]{6}$/i.test(p.color)) name.style.color = p.color;
+                info.append(name);
+                const parts = [p.condition, p.rarity, p.statBoost ? 'Stat Boost' : null].filter(Boolean);
+                if (parts.length) {
+                    const meta = document.createElement('div');
+                    meta.textContent = parts.join(' · ');
+                    meta.style.cssText = 'color:var(--text-muted);font-size:0.85rem;';
+                    info.append(meta);
+                }
+                row.append(info);
+                return row;
+            }));
+            poolEl.style.display = 'block';
+        } else {
+            // Single prize (or free text)
+            prizeEl.textContent = data.prizeName;
+            if (typeof data.prizeColor === 'string' && /^#[0-9a-f]{6}$/i.test(data.prizeColor)) {
+                prizeEl.style.color = data.prizeColor;
+            }
+            if (imgEl && typeof data.prizeImage === 'string'
+                && data.prizeImage.startsWith('https://community.cloudflare.steamstatic.com/economy/image/')) {
+                imgEl.src = data.prizeImage;
+                imgEl.style.display = 'block';
+            }
+            const metaParts = [data.prizeCondition, data.prizeRarity, data.prizeStatBoost ? 'Stat Boost' : null].filter(Boolean);
+            if (metaEl && metaParts.length) {
+                metaEl.textContent = metaParts.join(' · ');
+                metaEl.style.display = 'block';
+            }
         }
         const countEl = document.getElementById('giveawayEntryCount');
         if (countEl) {
