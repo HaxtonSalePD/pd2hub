@@ -165,20 +165,57 @@ async function apiRequest(path, options = {}) {
     return data;
 }
 
-// --- TRADE URL PREFILL ---
+// --- SIGNED-IN USER DATA (fetched once per page, shared by several features) ---
+let mePromise = null;
+function loadMe() {
+    if (!getSavedUser()) return Promise.resolve(null);
+    if (!mePromise) {
+        mePromise = apiRequest('/api/me').catch(() => null);
+    }
+    return mePromise;
+}
+
 // Steam never exposes the trade token through any API, so it must be pasted once.
 // After that, the server remembers it and we fill it in automatically.
 async function prefillTradeLink() {
     const input = document.getElementById('tradelink') || document.getElementById('sellerTradeLink');
-    if (!input || input.value || !getSavedUser()) return;
-    try {
-        const me = await apiRequest('/api/me');
-        if (me.tradeLink && !input.value) {
-            input.value = me.tradeLink;
-        }
-    } catch {
-        // Server waking up — the user can still paste it manually
+    if (!input || input.value) return;
+    const me = await loadMe();
+    if (me?.tradeLink && !input.value) {
+        input.value = me.tradeLink;
     }
+}
+
+// Admins get an extra nav link; everyone else never sees it
+async function renderAdminNavLink() {
+    const me = await loadMe();
+    const navLinks = document.getElementById('navLinks');
+    if (!me?.isAdmin || !navLinks || navLinks.querySelector('a[href="admin.html"]')) return;
+    const a = document.createElement('a');
+    a.href = 'admin.html';
+    a.textContent = 'Admin';
+    if (window.location.pathname.endsWith('admin.html')) a.className = 'active';
+    navLinks.append(a);
+}
+
+// Giveaway page: show a friendly "you're in" state instead of letting the user
+// discover via an error that they already entered
+function markGiveawayEntered() {
+    const tradeInput = document.getElementById('tradelink');
+    if (!tradeInput) return;
+    const btn = tradeInput.closest('form')?.querySelector('button[type="submit"]');
+    if (!btn) return;
+    btn.disabled = true;
+    btn.textContent = "You're in — good luck! 🍀";
+    btn.style.opacity = '0.75';
+    btn.style.cursor = 'default';
+    tradeInput.disabled = true;
+}
+
+async function renderGiveawayEntryState() {
+    if (!document.getElementById('tradelink') || document.getElementById('sellerTradeLink')) return;
+    const me = await loadMe();
+    if (me?.enteredGiveaway) markGiveawayEntered();
 }
 
 // --- GIVEAWAY INFO (giveaway page only) ---
@@ -217,7 +254,8 @@ async function handleGiveawaySubmit(event) {
             body: JSON.stringify({ tradeLink: tradeLinkInput.value.trim() })
         });
         showToast(data.message || 'Entry received! Good luck.');
-        tradeLinkInput.value = '';
+        markGiveawayEntered();
+        loadGiveawayInfo(); // refresh the "N heisters have entered" line
     } catch (err) {
         showToast(err.message);
     }
@@ -231,6 +269,8 @@ document.addEventListener('DOMContentLoaded', () => {
     renderSteamUserBadge();
     loadGiveawayInfo();
     prefillTradeLink();
+    renderAdminNavLink();
+    renderGiveawayEntryState();
 
     // Wake the backend early: on the free plan it sleeps after ~15 minutes idle,
     // so this ping starts it while the visitor is still reading the page.
