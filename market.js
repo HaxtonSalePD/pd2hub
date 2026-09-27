@@ -77,6 +77,19 @@ function createListingCard(listing, currentUser) {
         el('p', 'listing-price-label', 'Wants skins worth about this much')
     );
 
+    // How the asking value compares with the Steam Community Market's lowest price
+    if (typeof listing.steamPriceCents === 'number' && listing.steamPriceCents > 0) {
+        const diff = listing.steamPriceCents - listing.priceCents;
+        const pct = Math.round(Math.abs(diff) / listing.steamPriceCents * 100);
+        if (pct < 3) {
+            card.append(el('p', 'price-compare even', `≈ Steam price (${formatPrice(listing.steamPriceCents)})`));
+        } else if (diff > 0) {
+            card.append(el('p', 'price-compare good', `${pct}% under Steam — ${formatPrice(listing.steamPriceCents)} there`));
+        } else {
+            card.append(el('p', 'price-compare bad', `${pct}% above Steam — ${formatPrice(listing.steamPriceCents)} there`));
+        }
+    }
+
     if (listing.note) {
         card.append(el('p', 'listing-note', listing.note));
     }
