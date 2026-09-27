@@ -34,6 +34,93 @@ function el(tag, className, text) {
     return node;
 }
 
+// Asks for a second click instead of a browser confirm() dialog, which some
+// in-app browsers (Discord, the Steam client) block outright
+function armButton(btn, confirmLabel, action) {
+    const label = btn.textContent;
+    let armed = false;
+    let timer = null;
+    btn.addEventListener('click', () => {
+        if (!armed) {
+            armed = true;
+            btn.textContent = confirmLabel;
+            timer = setTimeout(() => { armed = false; btn.textContent = label; }, 4000);
+            return;
+        }
+        clearTimeout(timer);
+        armed = false;
+        btn.textContent = label;
+        action();
+    });
+}
+
+// A small form that opens inside a card's action area (replaces prompt())
+function toggleInlinePanel(actions, build) {
+    const existing = actions.querySelector('.inline-panel');
+    if (existing) {
+        existing.remove();
+        return;
+    }
+    const panel = el('div', 'inline-panel');
+    build(panel, () => panel.remove());
+    actions.append(panel);
+    panel.querySelector('input')?.focus();
+}
+
+function openSoldPanel(actions, listing) {
+    const total = listing.quantity || 1;
+    toggleInlinePanel(actions, (panel, close) => {
+        const label = el('label', null, `How many did you trade away? (1–${total})`);
+        const input = el('input');
+        input.type = 'number';
+        input.min = 1;
+        input.max = total;
+        input.step = 1;
+        input.value = total;
+        label.append(input);
+        const confirmBtn = el('button', 'btn-small-inline primary', 'Confirm');
+        confirmBtn.type = 'button';
+        confirmBtn.addEventListener('click', () => {
+            const quantity = Math.floor(Number(input.value));
+            if (!Number.isInteger(quantity) || quantity < 1 || quantity > total) {
+                showToast(`Please enter a number between 1 and ${total}.`);
+                return;
+            }
+            close();
+            markSold(listing, quantity);
+        });
+        const cancelBtn = el('button', 'btn-small-inline', 'Cancel');
+        cancelBtn.type = 'button';
+        cancelBtn.addEventListener('click', close);
+        panel.append(label, confirmBtn, cancelBtn);
+    });
+}
+
+function openReportPanel(actions, listingId) {
+    if (!getSavedUser()) {
+        showToast('Please sign in with Steam first to report a listing.');
+        return;
+    }
+    toggleInlinePanel(actions, (panel, close) => {
+        const label = el('label', null, 'What\u2019s wrong with this listing? (optional)');
+        const input = el('input');
+        input.type = 'text';
+        input.maxLength = 140;
+        input.placeholder = 'e.g. asks for money, fake item';
+        label.append(input);
+        const sendBtn = el('button', 'btn-small-inline primary', 'Send report');
+        sendBtn.type = 'button';
+        sendBtn.addEventListener('click', () => {
+            close();
+            reportListing(listingId, input.value);
+        });
+        const cancelBtn = el('button', 'btn-small-inline', 'Cancel');
+        cancelBtn.type = 'button';
+        cancelBtn.addEventListener('click', close);
+        panel.append(label, sendBtn, cancelBtn);
+    });
+}
+
 function createListingCard(listing, currentUser) {
     const rarityClass = RARITY_CLASSES[listing.rarity] || 'common';
     const card = el('div', `card listing-card rarity-${rarityClass}`);
@@ -97,7 +184,7 @@ function createListingCard(listing, currentUser) {
     seller.target = '_blank';
     seller.rel = 'noopener noreferrer';
     seller.title = 'View seller\'s Steam profile';
-    if (listing.sellerAvatar) {
+    if (isSteamAvatar(listing.sellerAvatar)) {
         const avatar = el('img');
         avatar.src = listing.sellerAvatar;
         avatar.alt = '';
@@ -115,10 +202,14 @@ function createListingCard(listing, currentUser) {
         const soldBtn = el('button', 'btn-trade-offer', 'Mark Sold');
         soldBtn.type = 'button';
         soldBtn.style.border = 'none';
-        soldBtn.addEventListener('click', () => markSold(listing));
+        if ((listing.quantity || 1) > 1) {
+            soldBtn.addEventListener('click', () => openSoldPanel(actions, listing));
+        } else {
+            armButton(soldBtn, 'Click again to confirm', () => markSold(listing, 1));
+        }
         const removeBtn = el('button', 'btn-remove', 'Remove Listing');
         removeBtn.type = 'button';
-        removeBtn.addEventListener('click', () => removeListing(listing.id));
+        armButton(removeBtn, 'Click again to remove', () => removeListing(listing.id));
         actions.append(soldBtn, removeBtn);
     } else {
         if (listing.tradeLink && listing.tradeLink.startsWith('https://steamcommunity.com/tradeoffer/new/')) {
@@ -130,7 +221,7 @@ function createListingCard(listing, currentUser) {
         }
         const reportBtn = el('button', 'btn-report', '⚠ Report this listing');
         reportBtn.type = 'button';
-        reportBtn.addEventListener('click', () => reportListing(listing.id));
+        reportBtn.addEventListener('click', () => openReportPanel(actions, listing.id));
         actions.append(reportBtn);
     }
     card.append(actions);
@@ -138,34 +229,56 @@ function createListingCard(listing, currentUser) {
     return card;
 }
 
-async function loadListings() {
+const LISTINGS_PAGE_SIZE = 100; // matches the server
+let currentPage = 0;
+let shownCount = 0;
+
+async function loadListings(append = false) {
     const grid = document.getElementById('listingsGrid');
     const status = document.getElementById('listingsStatus');
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
+    const page = append ? currentPage + 1 : 0;
     const params = new URLSearchParams({
         search: document.getElementById('searchInput').value.trim(),
         sort: document.getElementById('sortSelect').value,
         rarity: document.getElementById('rarityFilter').value,
-        condition: document.getElementById('conditionFilter').value
+        condition: document.getElementById('conditionFilter').value,
+        page: String(page)
     });
 
     // Ignore older responses if the user keeps typing
     const requestId = ++latestRequestId;
-    status.textContent = 'Opening the vault… (the free server wakes from its nap in under a minute)';
+    if (append) {
+        loadMoreBtn.disabled = true;
+    } else {
+        status.textContent = 'Opening the vault… (the free server wakes from its nap in under a minute)';
+    }
 
     try {
         const listings = await apiRequest(`/api/listings?${params}`);
         if (requestId !== latestRequestId) return;
 
         const currentUser = getSavedUser();
-        grid.replaceChildren(...listings.map(listing => createListingCard(listing, currentUser)));
-        status.textContent = listings.length === 0
+        const cards = listings.map(listing => createListingCard(listing, currentUser));
+        if (append) {
+            grid.append(...cards);
+        } else {
+            grid.replaceChildren(...cards);
+        }
+        currentPage = page;
+        shownCount = append ? shownCount + listings.length : listings.length;
+        const more = listings.length === LISTINGS_PAGE_SIZE;
+        loadMoreBtn.hidden = !more;
+        status.textContent = shownCount === 0
             ? (params.get('search')
                 ? 'No listings match your search.'
                 : 'The table’s empty — sign in and be the first to put loot on it.')
-            : `${listings.length} listing${listings.length === 1 ? '' : 's'}`;
+            : `${shownCount}${more ? '+' : ''} listing${shownCount === 1 ? '' : 's'}`;
     } catch (err) {
         if (requestId !== latestRequestId) return;
-        status.textContent = err.message;
+        if (append) showToast(err.message); else status.textContent = err.message;
+    } finally {
+        loadMoreBtn.disabled = false;
     }
 }
 
@@ -219,14 +332,7 @@ async function handleListingSubmit(event) {
     }
 }
 
-async function reportListing(listingId) {
-    if (!getSavedUser()) {
-        showToast('Please sign in with Steam first to report a listing.');
-        return;
-    }
-    const reason = prompt('Why are you reporting this listing? (optional)');
-    if (reason === null) return; // cancelled
-
+async function reportListing(listingId, reason) {
     try {
         const data = await apiRequest(`/api/listings/${encodeURIComponent(listingId)}/report`, {
             method: 'POST',
@@ -257,6 +363,8 @@ function drawInventoryTiles(items) {
     grid.replaceChildren(...items.map(item => {
         const tile = el('div', 'inv-tile');
         tile.setAttribute('role', 'option');
+        tile.setAttribute('aria-selected', String(selectedInvItem?.name === item.name));
+        if (selectedInvItem?.name === item.name) tile.classList.add('selected');
         tile.tabIndex = 0;
 
         if (item.image) {
@@ -290,8 +398,12 @@ function onInvFilter() {
 
 function selectInvItem(item, tile) {
     selectedInvItem = item;
-    document.querySelectorAll('.inv-tile.selected').forEach(t => t.classList.remove('selected'));
+    document.querySelectorAll('.inv-tile.selected').forEach(t => {
+        t.classList.remove('selected');
+        t.setAttribute('aria-selected', 'false');
+    });
     tile.classList.add('selected');
+    tile.setAttribute('aria-selected', 'true');
 
     const panel = document.getElementById('selectedItemPanel');
     panel.replaceChildren();
@@ -404,7 +516,9 @@ function initialTab() {
 function switchTab(tab) {
     for (const [key, sectionId] of Object.entries(TAB_SECTIONS)) {
         document.getElementById(sectionId).hidden = key !== tab;
-        document.querySelector(`.market-tab[data-tab="${key}"]`).classList.toggle('active', key === tab);
+        const tabBtn = document.querySelector(`.market-tab[data-tab="${key}"]`);
+        tabBtn.classList.toggle('active', key === tab);
+        tabBtn.setAttribute('aria-selected', String(key === tab));
     }
     try { localStorage.setItem('pd2_market_tab', tab); } catch {}
     history.replaceState(null, '', tab === 'browse' ? window.location.pathname : `#${tab}`);
@@ -447,19 +561,7 @@ function initNoteCounter() {
     update();
 }
 
-async function markSold(listing) {
-    let quantity = listing.quantity || 1;
-    if (quantity > 1) {
-        const answer = prompt(`How many did you trade away? (1–${quantity})`, String(quantity));
-        if (answer === null) return;
-        quantity = Math.floor(Number(answer));
-        if (!Number.isInteger(quantity) || quantity < 1 || quantity > (listing.quantity || 1)) {
-            showToast(`Please enter a number between 1 and ${listing.quantity}.`);
-            return;
-        }
-    } else if (!confirm('Mark this listing as traded? It comes off the market.')) {
-        return;
-    }
+async function markSold(listing, quantity) {
     try {
         const data = await apiRequest(`/api/listings/${encodeURIComponent(listing.id)}/sold`, {
             method: 'POST',
@@ -478,8 +580,6 @@ async function markSold(listing) {
 }
 
 async function removeListing(listingId) {
-    if (!confirm('Remove this listing?')) return;
-
     try {
         const data = await apiRequest(`/api/listings/${encodeURIComponent(listingId)}`, { method: 'DELETE' });
         showToast(data.message || 'Listing removed.');
@@ -526,12 +626,13 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         document.getElementById('searchInput').focus();
     });
-    document.getElementById('sortSelect').addEventListener('change', loadListings);
-    document.getElementById('rarityFilter').addEventListener('change', loadListings);
-    document.getElementById('conditionFilter').addEventListener('change', loadListings);
+    document.getElementById('sortSelect').addEventListener('change', () => loadListings());
+    document.getElementById('rarityFilter').addEventListener('change', () => loadListings());
+    document.getElementById('conditionFilter').addEventListener('change', () => loadListings());
+    document.getElementById('loadMoreBtn').addEventListener('click', () => loadListings(true));
     document.getElementById('searchInput').addEventListener('input', () => {
         clearTimeout(searchTimer);
-        searchTimer = setTimeout(loadListings, 300);
+        searchTimer = setTimeout(() => loadListings(), 300);
     });
 
     switchTab(initialTab());

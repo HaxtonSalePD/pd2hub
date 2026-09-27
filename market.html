@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; connect-src https://pd2hub-backend.onrender.com; img-src 'self' data: https://community.cloudflare.steamstatic.com https://community.steamstatic.com https://avatars.steamstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; base-uri 'none'; form-action 'self'; object-src 'none'">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Skin Market | PD2Hub Central</title>
     <meta name="description" content="List your PAYDAY 2 skins and browse community listings. Skins trade for skins of similar Steam Market value through normal Steam trade offers.">
@@ -429,6 +430,62 @@
         }
 
         /* --- LISTINGS --- */
+        .inline-panel {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 0.4rem;
+            margin-top: 0.4rem;
+            padding: 0.6rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background-color: var(--input-bg);
+        }
+
+        .inline-panel label {
+            flex: 1 1 100%;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .inline-panel input {
+            display: block;
+            width: 100%;
+            margin-top: 0.3rem;
+            padding: 0.45rem;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-main);
+            font-size: 0.9rem;
+        }
+
+        .btn-small-inline {
+            flex: 1;
+            padding: 0.45rem 0.6rem;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-main);
+            font-weight: bold;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        .btn-small-inline.primary {
+            background-color: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: #000;
+        }
+
+        /* Light theme: the dark gold needs white text to stay readable */
+        body.light-theme .btn-submit,
+        body.light-theme .btn-trade-offer,
+        body.light-theme .btn-small-inline.primary {
+            color: #fff;
+        }
+
         .market-tabs {
             display: flex;
             gap: 0.5rem;
@@ -594,12 +651,12 @@
         }
 
         .discount-badge.good {
-            background-color: #2e9e44;
+            background-color: #1e7e34;
             color: #fff;
         }
 
         .discount-badge.bad {
-            background-color: var(--accent-red);
+            background-color: #c0392b;
             color: #fff;
         }
 
@@ -796,12 +853,12 @@
         </details>
 
         <div class="market-tabs" role="tablist">
-            <button type="button" class="market-tab active" data-tab="browse">Browse Listings</button>
-            <button type="button" class="market-tab" data-tab="sell">Sell a Skin</button>
-            <button type="button" class="market-tab" data-tab="mine">My Listings</button>
+            <button type="button" class="market-tab active" data-tab="browse" role="tab" id="tab-browse" aria-controls="listings" aria-selected="true">Browse Listings</button>
+            <button type="button" class="market-tab" data-tab="sell" role="tab" id="tab-sell" aria-controls="sell" aria-selected="false">Sell a Skin</button>
+            <button type="button" class="market-tab" data-tab="mine" role="tab" id="tab-mine" aria-controls="mylistings" aria-selected="false">My Listings</button>
         </div>
 
-        <section id="sell" hidden>
+        <section id="sell" role="tabpanel" aria-labelledby="tab-sell" hidden>
             <h2 class="section-title">Sell a Skin</h2>
 
             <div class="card">
@@ -860,7 +917,7 @@
             </div>
         </section>
 
-        <section id="listings">
+        <section id="listings" role="tabpanel" aria-labelledby="tab-browse">
             <h2 class="section-title">Browse Listings</h2>
 
             <div class="toolbar">
@@ -891,9 +948,12 @@
 
             <p class="listings-status" id="listingsStatus"></p>
             <div class="grid" id="listingsGrid"></div>
+            <div style="text-align: center; margin: -1.5rem 0 3rem;">
+                <button type="button" class="btn-import" id="loadMoreBtn" hidden>Load more listings</button>
+            </div>
         </section>
 
-        <section id="mylistings" hidden>
+        <section id="mylistings" role="tabpanel" aria-labelledby="tab-mine" hidden>
             <h2 class="section-title">My Active Listings</h2>
             <p class="listings-status" id="myListingsStatus"></p>
             <div class="grid" id="myListingsGrid"></div>

@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; connect-src https://pd2hub-backend.onrender.com; img-src 'self' data: https://community.cloudflare.steamstatic.com https://community.steamstatic.com https://avatars.steamstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; base-uri 'none'; form-action 'self'; object-src 'none'">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PD2Hub Central | PAYDAY 2 Fan Hub</title>
     <meta name="description" content="Unofficial PAYDAY 2 fan hub: heister profiles, build guides, skin economy tips, trading resources and community giveaways.">
@@ -403,6 +404,13 @@
             font-size: 0.85rem;
             border-top: 1px solid var(--border-color);
         }
+        /* Light theme: the dark gold needs white text to stay readable */
+        body.light-theme .btn-submit,
+        body.light-theme .btn-trade,
+        body.light-theme .btn {
+            color: #fff;
+        }
+
         /* --- PAYDAY THEME --- */
         header h1 {
             font-family: 'Allerta Stencil', Impact, 'Arial Black', sans-serif;
@@ -470,22 +478,22 @@
         <section id="characters">
             <h2 class="section-title">The Original Crew <span style="font-size: 0.9rem; color: var(--text-muted); font-weight: normal;">(Click a heister for details)</span></h2>
             <div class="grid">
-                <div class="card card-clickable" onclick="openHeisterModal('Dallas', 'Mastermind', 'Nathan Steele', 'Medic Bag', 'AMCAR Rifle', 'The mastermind leader of the crew. Famous for shouting for medic bags and coordinating strategic hostage management.')">
+                <div class="card card-clickable" role="button" tabindex="0" aria-haspopup="dialog" data-name="Dallas" data-role="Mastermind" data-real-name="Nathan Steele" data-equipment="Medic Bag" data-weapon="AMCAR Rifle" data-bio="The mastermind leader of the crew. Famous for shouting for medic bags and coordinating strategic hostage management.">
                     <span class="card-tag">Mastermind</span>
                     <h3>Dallas</h3>
                     <p>The de facto leader of the Payday Gang. Known for his iconic American Flag mask and his urgent need for medic bags.</p>
                 </div>
-                <div class="card card-clickable" onclick="openHeisterModal('Hoxton', 'Fugitive', 'James Hoxworth', 'First Aid Kit', 'AK Rifle', 'The sharp-tongued Brit who spent time in HM Prison Fridley before being broken out by the gang in a high-stakes heist.')">
+                <div class="card card-clickable" role="button" tabindex="0" aria-haspopup="dialog" data-name="Hoxton" data-role="Fugitive" data-real-name="James Hoxworth" data-equipment="First Aid Kit" data-weapon="AK Rifle" data-bio="The sharp-tongued Brit who spent time in HM Prison Fridley before being broken out by the gang in a high-stakes heist.">
                     <span class="card-tag">Fugitive</span>
                     <h3>Hoxton</h3>
                     <p>The sharp-tongued Brit who reclaimed his title after breaking out of custody in one of the gang's most memorable heists.</p>
                 </div>
-                <div class="card card-clickable" onclick="openHeisterModal('Wolf', 'Technician', 'Ulf', 'Sentry Gun / Trip Mines', 'Compact-5', 'A former software developer from Sweden who turned to crime after his company collapsed. Handles drills and heavy explosives.')">
+                <div class="card card-clickable" role="button" tabindex="0" aria-haspopup="dialog" data-name="Wolf" data-role="Technician" data-real-name="Ulf" data-equipment="Sentry Gun / Trip Mines" data-weapon="Compact-5" data-bio="A former software developer from Sweden who turned to crime after his company collapsed. Handles drills and heavy explosives.">
                     <span class="card-tag">Technician</span>
                     <h3>Wolf</h3>
                     <p>A former software developer turned unpredictable wild card. Wolf handles heavy machinery, explosives, and drill repairs.</p>
                 </div>
-                <div class="card card-clickable" onclick="openHeisterModal('Chains', 'Enforcer', 'Nicolas', 'Ammo Bag', 'Reinbeck Shotgun', 'A former military veteran who served in the Navy SEALs. Brings heavy firepower and frontline defense to every job.')">
+                <div class="card card-clickable" role="button" tabindex="0" aria-haspopup="dialog" data-name="Chains" data-role="Enforcer" data-real-name="Nicolas" data-equipment="Ammo Bag" data-weapon="Reinbeck Shotgun" data-bio="A former military veteran who served in the Navy SEALs. Brings heavy firepower and frontline defense to every job.">
                     <span class="card-tag">Enforcer</span>
                     <h3>Chains</h3>
                     <p>A military veteran who brings massive firepower and heavy armor support to every high-stakes job.</p>
@@ -593,9 +601,9 @@
 
     </div>
 
-    <div class="modal-overlay" id="heisterModal" onclick="closeModalOnOverlay(event)">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeModal()">&times;</button>
+    <div class="modal-overlay" id="heisterModal" aria-hidden="true">
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+            <button type="button" class="modal-close" id="modalClose" aria-label="Close">&times;</button>
             <span class="card-tag" id="modalTag">Role</span>
             <h2 id="modalTitle" style="color: var(--accent-blue); margin-bottom: 0.5rem;">Name</h2>
             <p style="margin-bottom: 1rem;" id="modalBio">Bio description goes here.</p>
@@ -620,33 +628,7 @@
     </footer>
 
     <script src="main.js"></script>
-    <script>
-        function openHeisterModal(name, role, realName, equipment, weapon, bio) {
-            document.getElementById('modalTitle').textContent = name;
-            document.getElementById('modalTag').textContent = role;
-            document.getElementById('modalRealName').textContent = realName;
-            document.getElementById('modalEquipment').textContent = equipment;
-            document.getElementById('modalWeapon').textContent = weapon;
-            document.getElementById('modalBio').textContent = bio;
-            document.getElementById('heisterModal').classList.add('active');
-        }
-
-        function closeModal() {
-            document.getElementById('heisterModal').classList.remove('active');
-        }
-
-        function closeModalOnOverlay(event) {
-            if (event.target === document.getElementById('heisterModal')) {
-                closeModal();
-            }
-        }
-
-        window.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                closeModal();
-            }
-        });
-    </script>
+    <script src="home.js"></script>
 
 </body>
 </html>
