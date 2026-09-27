@@ -306,6 +306,23 @@ async function loadGiveawayInfo() {
                 metaEl.style.display = 'block';
             }
         }
+        const lastEl = document.getElementById('lastWinner');
+        if (lastEl && data.lastWinner) {
+            lastEl.replaceChildren();
+            if (data.lastWinner.avatar) {
+                const av = document.createElement('img');
+                av.src = data.lastWinner.avatar;
+                av.alt = '';
+                av.width = 22;
+                av.height = 22;
+                av.style.cssText = 'border-radius:50%;vertical-align:middle;margin-right:0.4rem;';
+                lastEl.append(av);
+            }
+            lastEl.append(`Last winner: ${data.lastWinner.username}`
+                + (data.lastWinner.prize ? ` — won ${data.lastWinner.prize}` : '')
+                + ` (${new Date(data.lastWinner.drawnAt).toLocaleDateString()})`);
+            lastEl.style.display = 'block';
+        }
         const countEl = document.getElementById('giveawayEntryCount');
         if (countEl) {
             countEl.textContent = data.totalEntries === 1

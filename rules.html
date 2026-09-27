@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House Rules | PD2Hub Central</title>
+    <meta name="description" content="PD2Hub's house rules: what data the site stores, how the giveaway works, market rules, and how to get your data removed.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Allerta+Stencil&family=Oswald:wght@500;600&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://pd2hub-backend.onrender.com"><link rel="preconnect" href="https://community.cloudflare.steamstatic.com"><link rel="preconnect" href="https://avatars.steamstatic.com">
+    <style>
+        :root {
+            --bg-dark: #0c0b09;
+            --card-bg: #15130f;
+            --accent-blue: #ffc21a;
+            --accent-red: #e5484d;
+            --text-main: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --nav-bg: #12100c;
+            --border-color: #2e2a22;
+        }
+
+        body.light-theme {
+            --bg-dark: #f2efe8;
+            --card-bg: #fffdf7;
+            --accent-blue: #8a6a00;
+            --accent-red: #c92a2a;
+            --text-main: #1c1e21;
+            --text-muted: #606770;
+            --nav-bg: #e9e4d8;
+            --border-color: #d6cfc0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Barlow', 'Segoe UI', Tahoma, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        header {
+            background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.95)),
+                        radial-gradient(circle, #241c0d 0%, #0c0b09 100%);
+            padding: 2.5rem 1rem;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            letter-spacing: 4px;
+            color: #fff;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(255, 194, 26, 0.5);
+        }
+
+        header p {
+            color: var(--accent-blue);
+            font-weight: 600;
+            letter-spacing: 2px;
+            margin-top: 0.5rem;
+        }
+
+        nav {
+            background-color: var(--nav-bg);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        nav a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        nav a:hover, nav a.active {
+            color: var(--accent-blue);
+            background-color: rgba(255, 194, 26, 0.1);
+        }
+
+        .nav-toggle {
+            display: none;
+            background: transparent;
+            border: 2px solid var(--accent-blue);
+            color: var(--text-main);
+            font-size: 1.2rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .theme-toggle-btn {
+            background: transparent;
+            border: 2px solid var(--accent-blue);
+            color: var(--text-main);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85rem;
+            transition: all 0.2s ease;
+        }
+
+        .theme-toggle-btn:hover {
+            background-color: var(--accent-blue);
+            color: #000;
+        }
+
+        @media (max-width: 768px) {
+            .nav-toggle { display: block; }
+            nav { flex-wrap: wrap; }
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                gap: 0.5rem;
+                padding-top: 1rem;
+            }
+            .nav-links.active { display: flex; }
+            .nav-links a {
+                width: 100%;
+                text-align: center;
+                padding: 0.6rem;
+            }
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            border-left: 4px solid var(--accent-blue);
+            padding-left: 0.75rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card h3 {
+            color: var(--accent-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .card p, .card li {
+            color: var(--text-muted);
+        }
+
+        .card strong {
+            color: var(--text-main);
+        }
+
+        .card ul, .card ol {
+            padding-left: 1.2rem;
+        }
+
+        .card li {
+            margin-bottom: 0.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 0.6rem 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-muted);
+            vertical-align: top;
+        }
+
+        th {
+            color: var(--text-main);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+
+        a.inline {
+            color: var(--accent-blue);
+        }
+
+        a:focus-visible, button:focus-visible {
+            outline: 2px solid var(--accent-blue);
+            outline-offset: 2px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation: none !important;
+                transition: none !important;
+            }
+            html { scroll-behavior: auto; }
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            border: 2px solid var(--accent-blue);
+            padding: 1rem 1.5rem;
+            border-radius: 6px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            z-index: 2000;
+        }
+
+        .toast.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background-color: var(--nav-bg);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* --- PAYDAY THEME --- */
+        header h1 {
+            font-family: 'Allerta Stencil', Impact, 'Arial Black', sans-serif;
+            text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.55);
+        }
+
+        header {
+            border-bottom: 8px solid;
+            border-image: repeating-linear-gradient(-45deg, var(--accent-blue) 0 16px, #0b0a08 16px 32px) 8;
+        }
+
+        .section-title, nav a, .theme-toggle-btn, button {
+            font-family: 'Oswald', 'Barlow', sans-serif;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>House Rules</h1>
+        <p>What We Store, How the Giveaway Works, and How to Trade Safe</p>
+    </header>
+
+    <nav>
+        <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">☰</button>
+        <div class="nav-links" id="navLinks">
+            <a href="index.html">Home</a>
+            <a href="trade.html">Trading</a>
+            <a href="market.html">Market</a>
+            <a href="giveaway.html">Giveaway</a>
+        </div>
+        <div style="display: flex; gap: 0.5rem; align-items: center;" id="navAuthContainer">
+            <a href="https://pd2hub-backend.onrender.com/auth/steam?returnTo=index" class="steam-login-btn" id="steamAuthBtn">
+                <img src="https://community.cloudflare.steamstatic.com/public/images/signinthroughsteam/sits_01.png" alt="Sign in through STEAM" style="vertical-align: middle;">
+            </a>
+            <button class="theme-toggle-btn" id="themeToggleBtn">☀️ Light Mode</button>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <section>
+            <h2 class="section-title">The Short Version</h2>
+            <div class="card">
+                <ul>
+                    <li>PD2Hub is a <strong>free fan project</strong> run by one person. No ads, no tracking, no money.</li>
+                    <li>We store the minimum Steam gives us: your <strong>public profile</strong> and your <strong>trade URL</strong>. Never your password, never your items.</li>
+                    <li>The giveaway is <strong>free to enter</strong>, one entry per account, winners drawn at random.</li>
+                    <li>On the market, <strong>skins trade for skins through Steam</strong>. Anyone asking you for money or codes is a scammer — report them.</li>
+                    <li>Want your data gone? Ask, and it's deleted.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="privacy">
+            <h2 class="section-title">What We Store About You</h2>
+            <div class="card">
+                <p style="margin-bottom: 1rem;">
+                    Nothing is collected until you sign in through Steam or submit something.
+                    Visitors who only read the site are not tracked at all.
+                </p>
+                <table>
+                    <tr><th>What</th><th>Why</th><th>Kept until</th></tr>
+                    <tr>
+                        <td>Your SteamID, public name and avatar</td>
+                        <td>To show who listed a skin or entered the giveaway</td>
+                        <td>You ask for removal, or your entries/listings are gone</td>
+                    </tr>
+                    <tr>
+                        <td>Your Steam trade URL</td>
+                        <td>So buyers can send you offers, and winners can receive prizes. Also remembered so you don't have to paste it every time.</td>
+                        <td>You ask for removal</td>
+                    </tr>
+                    <tr>
+                        <td>Giveaway entries and past winners</td>
+                        <td>Running the drawing fairly and keeping a record of who won</td>
+                        <td>Archived when a giveaway ends; deleted on request</td>
+                    </tr>
+                    <tr>
+                        <td>Market listings</td>
+                        <td>Showing your offer to other players</td>
+                        <td>You remove them, or they expire after 30 days</td>
+                    </tr>
+                    <tr>
+                        <td>Reports you file</td>
+                        <td>Moderating the market</td>
+                        <td>The report is handled</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="card">
+                <h3>What we never see or store</h3>
+                <ul>
+                    <li><strong>Your Steam password.</strong> Signing in happens entirely on Steam's own page. Steam only tells us who you are.</li>
+                    <li><strong>Your items.</strong> We read your public inventory to verify listings, but the site can never move, hold or trade anything. Every trade is a normal Steam trade offer between two players.</li>
+                    <li><strong>Payment details.</strong> There is nothing to buy here.</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>In your browser</h3>
+                <p style="margin-bottom: 0.75rem;">
+                    The site keeps a few things in your own browser's storage: your login token
+                    (valid 7 days), your theme choice, and small conveniences like which market tab
+                    you had open. This stays on your device. There are no ads, no analytics, and no
+                    third-party trackers. Fonts load from Google Fonts, and item pictures load from
+                    Steam's servers — standard for any site showing Steam items.
+                </p>
+                <p>Logging out (the ✕ next to your name) removes the login from your browser.</p>
+            </div>
+
+            <div class="card">
+                <h3>Getting your data removed</h3>
+                <p>
+                    Message the site admin on Steam
+                    (<a class="inline" href="https://steamcommunity.com/profiles/76561198251865874" target="_blank" rel="noopener noreferrer">Haxton Sale</a>)
+                    and everything stored about your account — entries, listings, trade URL, the lot — gets deleted.
+                    No questions, no waiting period beyond the time it takes to read the message.
+                </p>
+            </div>
+        </section>
+
+        <section id="giveaway-rules">
+            <h2 class="section-title">Giveaway Rules</h2>
+            <div class="card">
+                <ol>
+                    <li><strong>Entering is always free.</strong> Sign in with Steam, drop your trade URL, done. Nobody will ever ask you to pay, deposit, or "verify" anything to enter or to claim a prize.</li>
+                    <li><strong>One entry per Steam account</strong> per giveaway. Duplicate accounts get removed.</li>
+                    <li><strong>Winners are drawn at random</strong> — every entry has exactly the same chance, and the site's code enforces it.</li>
+                    <li><strong>Prizes arrive as a normal Steam trade offer</strong> to the trade URL you entered with. Check that the offer asks for <em>nothing</em> from your side before accepting.</li>
+                    <li><strong>Unclaimed prizes get redrawn.</strong> If a winner doesn't accept the trade offer within 14 days, a new winner is drawn.</li>
+                    <li>A giveaway can be cancelled before a draw; entries carry no cost either way.</li>
+                    <li>This giveaway is run by a fan. It is <strong>not sponsored by or affiliated with</strong> Starbreeze, OVERKILL or Valve.</li>
+                </ol>
+            </div>
+        </section>
+
+        <section id="market-rules">
+            <h2 class="section-title">Market Rules</h2>
+            <div class="card">
+                <ul>
+                    <li><strong>Skins trade for skins — never for money.</strong> The dollar figure on a listing is a value guide, not a price tag. Never send real money, gift cards or codes.</li>
+                    <li><strong>Listings are checked against the seller's inventory</strong> the moment they're created. Name, condition, rarity and picture come from Steam and can't be edited.</li>
+                    <li><strong>PD2Hub never holds items.</strong> Trades happen directly between players through Steam trade offers. Read every trade offer carefully before accepting.</li>
+                    <li><strong>Listings expire after 30 days</strong>, and each player can have at most 20 at a time.</li>
+                    <li><strong>See something shady?</strong> Use the report button on the listing. Reported listings are reviewed and scams are removed.</li>
+                    <li>The admin can remove any listing that breaks these rules.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section>
+            <h2 class="section-title">The Fine Print</h2>
+            <div class="card">
+                <p>
+                    PD2Hub is a hobby project, provided as-is, with no warranty of any kind. It can go
+                    down, change or shut off. Trade sensibly: the site verifies what it can, but the
+                    final check before you accept any trade offer is always yours. PAYDAY 2 and all
+                    related assets belong to Starbreeze Studios AB; Steam belongs to Valve Corporation.
+                    This site is affiliated with neither.
+                </p>
+            </div>
+        </section>
+
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite">Action completed successfully!</div>
+
+    <footer>
+        <p style="margin-bottom: 0.5rem;">
+            <a href="index.html" style="color: var(--text-muted);">Home</a> &middot;
+            <a href="trade.html" style="color: var(--text-muted);">Trading</a> &middot;
+            <a href="market.html" style="color: var(--text-muted);">Market</a> &middot;
+            <a href="giveaway.html" style="color: var(--text-muted);">Giveaway</a> &middot;
+            <a href="rules.html" style="color: var(--text-muted);">Rules</a>
+        </p>
+        <p>Built by a fan, for the crew. PAYDAY 2 is a registered trademark of Starbreeze Studios AB. All assets belong to their respective owners.</p>
+    </footer>
+
+    <script src="main.js"></script>
+
+</body>
+</html>

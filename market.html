@@ -457,16 +457,18 @@
         }
 
         .toolbar {
-            display: grid;
-            grid-template-columns: 1fr 220px;
-            gap: 1rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
             margin-bottom: 0.75rem;
         }
 
-        @media (max-width: 600px) {
-            .toolbar {
-                grid-template-columns: 1fr;
-            }
+        .toolbar input[type="search"] {
+            flex: 1 1 220px;
+        }
+
+        .toolbar select {
+            flex: 0 1 170px;
         }
 
         .listings-status {
@@ -742,6 +744,7 @@
             Every listing is checked against the seller’s public Steam inventory the moment
             it’s created. Item name, condition, rarity and picture come straight
             from the seller’s Steam inventory — sellers only set the asking value.
+            Listings expire after 30 days. Full rules: <a href="rules.html#market-rules" style="color: var(--accent-blue);">house rules</a>.
         </div>
 
         <div class="market-tabs" role="tablist">
@@ -814,6 +817,22 @@
 
             <div class="toolbar">
                 <input type="search" id="searchInput" placeholder="Search skins…" aria-label="Search skins" maxlength="60">
+                <select id="rarityFilter" aria-label="Filter by rarity">
+                    <option value="">Any rarity</option>
+                    <option value="Common">Common</option>
+                    <option value="Uncommon">Uncommon</option>
+                    <option value="Rare">Rare</option>
+                    <option value="Epic">Epic</option>
+                    <option value="Legendary">Legendary</option>
+                </select>
+                <select id="conditionFilter" aria-label="Filter by condition">
+                    <option value="">Any condition</option>
+                    <option value="Mint-Condition">Mint-Condition</option>
+                    <option value="Fine">Fine</option>
+                    <option value="Well-Used">Well-Used</option>
+                    <option value="Broken-In">Broken-In</option>
+                    <option value="Battle-Worn">Battle-Worn</option>
+                </select>
                 <select id="sortSelect" aria-label="Sort listings">
                     <option value="newest">Newest first</option>
                     <option value="price_asc">Value: low to high</option>
@@ -840,7 +859,8 @@
             <a href="index.html" style="color: var(--text-muted);">Home</a> &middot;
             <a href="trade.html" style="color: var(--text-muted);">Trading</a> &middot;
             <a href="market.html" style="color: var(--text-muted);">Market</a> &middot;
-            <a href="giveaway.html" style="color: var(--text-muted);">Giveaway</a>
+            <a href="giveaway.html" style="color: var(--text-muted);">Giveaway</a> &middot;
+            <a href="rules.html" style="color: var(--text-muted);">Rules</a>
         </p>
         <p>Built by a fan, for the crew. PAYDAY 2 is a registered trademark of Starbreeze Studios AB. All assets belong to their respective owners.</p>
     </footer>
