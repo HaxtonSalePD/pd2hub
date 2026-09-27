@@ -308,6 +308,18 @@ function selectInvItem(item, tile) {
     info.append(name);
     const metaParts = [item.condition, item.rarity].filter(Boolean);
     if (metaParts.length) info.append(el('div', 'inv-meta', metaParts.join(' · ')));
+
+    // Steam's price for this exact item, as a guide for the asking value
+    const priceLine = el('div', 'inv-meta', 'Steam price: checking…');
+    info.append(priceLine);
+    const fullName = item.name + (item.condition ? `, ${item.condition}` : '') + (item.statBoost ? ', Stat Boost' : '');
+    apiRequest(`/api/steam-price?name=${encodeURIComponent(fullName)}`)
+        .then(d => {
+            priceLine.textContent = d.cents > 0
+                ? `Steam price: ${formatPrice(d.cents)} — undercut it a bit to trade fast`
+                : 'Steam price: unknown for this item';
+        })
+        .catch(() => { priceLine.remove(); });
     panel.append(info);
     document.getElementById('selectedItemBox').style.display = 'block';
 
@@ -501,6 +513,9 @@ document.addEventListener('DOMContentLoaded', () => {
         skinsToggle.checked = localStorage.getItem('pd2_show_skins') === '1' && !!getSavedUser();
     } catch {}
     initNoteCounter();
+    // The market notice starts collapsed on phones, open on wider screens
+    const notice = document.getElementById('marketNotice');
+    if (notice && window.innerWidth > 640) notice.open = true;
     document.getElementById('invFilter').addEventListener('input', onInvFilter);
     // Press "/" anywhere on the Browse tab to jump into the search box
     document.addEventListener('keydown', e => {

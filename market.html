@@ -8,6 +8,8 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="PAYDAY 2 Skin Market – PD2Hub Central">
     <meta property="og:description" content="List your skins and browse community listings. Skins trade for skins through normal Steam trade offers — never for money.">
+    <meta property="og:image" content="https://haxtonsalepd.github.io/pd2hub/og-banner.png">
+    <meta name="twitter:card" content="summary_large_image">
     <meta property="og:url" content="https://haxtonsalepd.github.io/pd2hub/market.html">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Allerta+Stencil&family=Oswald:wght@500;600&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
@@ -230,6 +232,25 @@
 
         .notice strong {
             color: var(--text-main);
+        }
+
+        .notice summary {
+            cursor: pointer;
+            list-style: none;
+        }
+
+        .notice summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .notice-toggle {
+            color: var(--text-muted);
+            font-weight: normal;
+            font-size: 0.85rem;
+        }
+
+        details[open] .notice-toggle {
+            display: none;
         }
 
         /* --- SELL FORM --- */
@@ -761,8 +782,8 @@
 
     <div class="container">
 
-        <div class="notice">
-            <strong>Skins are traded for skins, never for money.</strong>
+        <details class="notice" id="marketNotice">
+            <summary><strong>Skins are traded for skins, never for money.</strong> <span class="notice-toggle">— tap for the house rules</span></summary>
             Each listing shows what the seller wants in return, measured in Steam Community Market value.
             To buy, send the seller a Steam trade offer with skins worth about that much.
             Never send money or gift codes outside Steam. PD2Hub does not hold items, so check the seller's
@@ -772,7 +793,7 @@
             market automatically. Item name, condition, rarity and picture come straight
             from the seller’s Steam inventory — sellers only set the asking value.
             Listings expire after 30 days. Full rules: <a href="rules.html#market-rules" style="color: var(--accent-blue);">house rules</a>.
-        </div>
+        </details>
 
         <div class="market-tabs" role="tablist">
             <button type="button" class="market-tab active" data-tab="browse">Browse Listings</button>

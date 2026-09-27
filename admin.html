@@ -562,6 +562,8 @@
                     <label for="newPrizeName" style="display:block; font-weight:bold; font-size:0.9rem; text-transform:uppercase; margin-bottom:0.4rem;">Giveaway title</label>
                     <input type="text" class="admin-input" id="newPrizeName" placeholder="e.g. September Loot Drop — optional when skins are picked" minlength="3" maxlength="80">
                     <p class="winner-meta" style="margin: -0.5rem 0 1rem;">With skins in the pool this is the headline shown above them (leave empty for an automatic one). Without skins, it IS the prize.</p>
+                    <label for="giveawayDays" style="display:block; font-weight:bold; font-size:0.9rem; text-transform:uppercase; margin-bottom:0.4rem;">Runs for (days)</label>
+                    <input type="number" class="admin-input" id="giveawayDays" min="1" max="60" step="1" placeholder="Optional — empty means no end date">
                     <button type="button" class="btn-submit btn-danger" id="startGiveawayBtn">Start New Giveaway</button>
                     <p class="draw-help">
                         This archives all current entries and winners, updates the prize shown on the

@@ -241,6 +241,10 @@ async function renderGiveawayEntryState() {
     if (me?.enteredGiveaway) markGiveawayEntered();
 }
 
+function centsToUsd(cents) {
+    return '$' + (cents / 100).toFixed(2);
+}
+
 // --- GIVEAWAY INFO (giveaway page only) ---
 async function loadGiveawayInfo() {
     const prizeEl = document.getElementById('prizeName');
@@ -278,7 +282,8 @@ async function loadGiveawayInfo() {
                 name.style.fontWeight = '600';
                 if (typeof p.color === 'string' && /^#[0-9a-f]{6}$/i.test(p.color)) name.style.color = p.color;
                 info.append(name);
-                const parts = [p.condition, p.rarity, p.statBoost ? 'Stat Boost' : null].filter(Boolean);
+                const parts = [p.condition, p.rarity, p.statBoost ? 'Stat Boost' : null,
+                    p.steamPriceCents > 0 ? `~${centsToUsd(p.steamPriceCents)} on Steam` : null].filter(Boolean);
                 if (parts.length) {
                     const meta = document.createElement('div');
                     meta.textContent = parts.join(' · ');
@@ -288,6 +293,14 @@ async function loadGiveawayInfo() {
                 row.append(info);
                 return row;
             }));
+            const knownValue = data.prizes.reduce((sum, p) =>
+                sum + (p.steamPriceCents > 0 ? p.steamPriceCents * (p.quantity || 1) : 0), 0);
+            if (knownValue > 0) {
+                const totalRow = document.createElement('div');
+                totalRow.textContent = `Combined Steam value: ~${centsToUsd(knownValue)}`;
+                totalRow.style.cssText = 'color:var(--accent-blue);font-weight:600;padding-top:0.6rem;';
+                poolEl.append(totalRow);
+            }
             poolEl.style.display = 'block';
         } else {
             // Single prize (or free text)
@@ -300,7 +313,9 @@ async function loadGiveawayInfo() {
                 imgEl.src = data.prizeImage;
                 imgEl.style.display = 'block';
             }
-            const metaParts = [data.prizeCondition, data.prizeRarity, data.prizeStatBoost ? 'Stat Boost' : null].filter(Boolean);
+            const singleSteam = data.prizes?.[0]?.steamPriceCents;
+            const metaParts = [data.prizeCondition, data.prizeRarity, data.prizeStatBoost ? 'Stat Boost' : null,
+                singleSteam > 0 ? `~${centsToUsd(singleSteam * (data.prizes[0].quantity || 1))} on Steam` : null].filter(Boolean);
             // Custom title over a single skin: keep the skin's own name visible too
             if (data.titleCustom && data.prizes?.[0]) {
                 const p = data.prizes[0];
@@ -327,6 +342,32 @@ async function loadGiveawayInfo() {
                 + (data.lastWinner.prize ? ` — won ${data.lastWinner.prize}` : '')
                 + ` (${new Date(data.lastWinner.drawnAt).toLocaleDateString()})`);
             lastEl.style.display = 'block';
+        }
+        const endsEl = document.getElementById('giveawayEnds');
+        if (endsEl && data.endsAt) {
+            const renderCountdown = () => {
+                const ms = new Date(data.endsAt).getTime() - Date.now();
+                if (ms <= 0) {
+                    endsEl.textContent = 'This round has ended — winner incoming!';
+                    const tradeInput = document.getElementById('tradelink');
+                    const btn = tradeInput?.closest('form')?.querySelector('button[type="submit"]');
+                    if (btn && !btn.disabled) {
+                        btn.disabled = true;
+                        btn.textContent = 'Round ended';
+                        btn.style.opacity = '0.75';
+                    }
+                    return true;
+                }
+                const d = Math.floor(ms / 86400000);
+                const h = Math.floor(ms / 3600000) % 24;
+                const m = Math.floor(ms / 60000) % 60;
+                endsEl.textContent = `⏳ Ends in ${d > 0 ? d + 'd ' : ''}${h}h ${m}m`;
+                return false;
+            };
+            endsEl.style.display = 'block';
+            if (!renderCountdown()) {
+                const timer = setInterval(() => { if (renderCountdown()) clearInterval(timer); }, 60000);
+            }
         }
         const countEl = document.getElementById('giveawayEntryCount');
         if (countEl) {
