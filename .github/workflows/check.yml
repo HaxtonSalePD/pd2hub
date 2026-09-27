@@ -1,0 +1,23 @@
+name: Syntax check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Syntax-check every script
+        run: for f in *.js; do node --check "$f"; done
+      - name: No inline scripts or handlers (the Content Security Policy blocks them)
+        run: |
+          if grep -nE '<script>|on(click|submit|change|input|keydown|load)=' *.html; then
+            echo "Inline script or event handler found; move it into a .js file."
+            exit 1
+          fi

@@ -1,11 +1,8 @@
 const BACKEND_URL = 'https://pd2hub-backend.onrender.com';
 
-// --- HELPER: HTML ESCAPING FOR XSS PROTECTION ---
-function escapeHTML(str) {
-    if (!str) return '';
-    return str.replace(/[&<>'"]/g,
-        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-    );
+// Only Steam's own avatar server is trusted as an image source for profile pictures
+function isSteamAvatar(url) {
+    return typeof url === 'string' && url.startsWith('https://avatars.steamstatic.com/');
 }
 
 // --- THEME MANAGEMENT ---
@@ -39,19 +36,24 @@ function initNavToggle() {
     const navLinks = document.getElementById('navLinks');
 
     if (navToggle && navLinks) {
+        navToggle.setAttribute('aria-expanded', 'false');
+        navToggle.setAttribute('aria-controls', 'navLinks');
         navToggle.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
+            const open = navLinks.classList.toggle('active');
+            navToggle.setAttribute('aria-expanded', String(open));
         });
     }
 }
 
 // --- TOAST NOTIFICATIONS ---
+let toastTimer = null;
 function showToast(message) {
     const toast = document.getElementById('toast');
     if (!toast) return;
     toast.textContent = message;
     toast.classList.add('show');
-    setTimeout(() => {
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
         toast.classList.remove('show');
     }, 3000);
 }
@@ -65,36 +67,67 @@ function decodeTokenPayload(token) {
     return JSON.parse(new TextDecoder().decode(bytes));
 }
 
-// After Steam login, the backend sends us back to page.html#token=...
+// A random value made before sign-in and checked after it. It lives only in this
+// tab's sessionStorage, so a sign-in link crafted by someone else (to log a visitor
+// into the attacker's account) can't contain it and is ignored.
+const LOGIN_STATE_KEY = 'pd2_login_state';
+
+function getLoginState() {
+    let state = null;
+    try { state = sessionStorage.getItem(LOGIN_STATE_KEY); } catch {}
+    if (!state) {
+        const bytes = new Uint8Array(16);
+        crypto.getRandomValues(bytes);
+        state = Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+        try { sessionStorage.setItem(LOGIN_STATE_KEY, state); } catch {}
+    }
+    return state;
+}
+
+// After Steam login, the backend sends us back to page.html#token=...&state=...
 function processSteamLogin() {
     const hashParams = new URLSearchParams(window.location.hash.slice(1));
     const token = hashParams.get('token');
     if (!token) return;
+    // Never leave the token in the address bar, whatever happens next
+    window.history.replaceState({}, document.title, window.location.pathname);
+
+    let expected = null;
+    try { expected = sessionStorage.getItem(LOGIN_STATE_KEY); } catch {}
+    if (!expected || hashParams.get('state') !== expected) {
+        showToast('That sign-in link did not start on this page, so it was ignored. Please use the Sign in button.');
+        return;
+    }
+    try { sessionStorage.removeItem(LOGIN_STATE_KEY); } catch {}
 
     try {
         const payload = decodeTokenPayload(token);
+        if (!/^\d{17}$/.test(String(payload.steamId)) || !payload.exp) throw new Error('Unexpected token contents');
         const userObj = {
             token,
             steamId: payload.steamId,
-            username: payload.username,
-            avatar: payload.avatar,
+            username: String(payload.username || 'Steam user').slice(0, 64),
+            avatar: isSteamAvatar(payload.avatar) ? payload.avatar : '',
             expiresAt: payload.exp * 1000
         };
         localStorage.setItem('steam_user', JSON.stringify(userObj));
     } catch (err) {
         console.error('Could not read login token', err);
     }
-    window.history.replaceState({}, document.title, window.location.pathname);
 }
 
 // Returns the signed-in user, or null if not signed in or the login expired
+let loginExpired = false;
 function getSavedUser() {
+    let raw = null;
     try {
-        const user = JSON.parse(localStorage.getItem('steam_user'));
+        raw = localStorage.getItem('steam_user');
+        const user = JSON.parse(raw);
         if (user && user.token && user.expiresAt > Date.now()) return user;
     } catch {
         // Corrupt value, fall through and clear it
     }
+    if (raw) loginExpired = true;
     localStorage.removeItem('steam_user');
     return null;
 }
@@ -104,7 +137,7 @@ function initSteamLoginLink() {
     const steamAuthBtn = document.getElementById('steamAuthBtn');
     if (!steamAuthBtn) return;
     const page = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
-    steamAuthBtn.href = `${BACKEND_URL}/auth/steam?returnTo=${encodeURIComponent(page)}`;
+    steamAuthBtn.href = `${BACKEND_URL}/auth/steam?returnTo=${encodeURIComponent(page)}&state=${getLoginState()}`;
 }
 
 function renderSteamUserBadge() {
@@ -119,16 +152,34 @@ function renderSteamUserBadge() {
     }
 
     if (savedUser && authContainer) {
-        const safeUsername = escapeHTML(savedUser.username);
-        const safeAvatar = escapeHTML(savedUser.avatar);
+        const badge = document.createElement('div');
+        badge.style.cssText = 'display:flex;align-items:center;gap:0.6rem;background:rgba(255,194,26,0.1);padding:0.25rem 0.6rem;border-radius:20px;border:1px solid var(--accent-blue);';
 
-        authContainer.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 0.6rem; background: rgba(0, 168, 255, 0.1); padding: 0.25rem 0.6rem; border-radius: 20px; border: 1px solid var(--accent-blue);">
-                <img src="${safeAvatar}" width="26" height="26" style="border-radius: 50%; vertical-align: middle;" alt="Avatar">
-                <span style="color: var(--accent-blue); font-weight: bold; font-size: 0.85rem;">${safeUsername}</span>
-                <button onclick="logoutSteam()" style="background: transparent; border: none; color: var(--accent-red); cursor: pointer; font-weight: bold; font-size: 0.8rem; margin-left: 0.2rem;" title="Logout">✕</button>
-            </div>
-        `;
+        if (isSteamAvatar(savedUser.avatar)) {
+            const img = document.createElement('img');
+            img.src = savedUser.avatar;
+            img.width = 26;
+            img.height = 26;
+            img.alt = '';
+            img.style.cssText = 'border-radius:50%;vertical-align:middle;';
+            badge.append(img);
+        }
+
+        const name = document.createElement('span');
+        name.textContent = savedUser.username;
+        name.style.cssText = 'color:var(--accent-blue);font-weight:bold;font-size:0.85rem;';
+        badge.append(name);
+
+        const logoutBtn = document.createElement('button');
+        logoutBtn.type = 'button';
+        logoutBtn.textContent = '✕';
+        logoutBtn.title = 'Log out';
+        logoutBtn.setAttribute('aria-label', 'Log out');
+        logoutBtn.style.cssText = 'background:transparent;border:none;color:var(--accent-red);cursor:pointer;font-weight:bold;font-size:0.8rem;margin-left:0.2rem;';
+        logoutBtn.addEventListener('click', logoutSteam);
+        badge.append(logoutBtn);
+
+        authContainer.replaceChildren(badge);
         if (themeBtn) authContainer.appendChild(themeBtn);
     }
 }
@@ -158,11 +209,22 @@ async function apiRequest(path, options = {}) {
     const data = await response.json().catch(() => ({}));
     if (response.status === 401) {
         localStorage.removeItem('steam_user');
+        if (user || loginExpired) handleExpiredSession();
     }
     if (!response.ok) {
         throw new Error(data.error || 'Request failed.');
     }
     return data;
+}
+
+// The login ran out while the page was open: say so, then reload so the page
+// shows the signed-out view (sign-in button back, owner-only buttons gone)
+let sessionExpiryHandled = false;
+function handleExpiredSession() {
+    if (sessionExpiryHandled) return;
+    sessionExpiryHandled = true;
+    showToast('Your login expired — please sign in with Steam again.');
+    setTimeout(() => window.location.reload(), 2500);
 }
 
 // --- SIGNED-IN USER DATA (fetched once per page, shared by several features) ---
@@ -246,6 +308,7 @@ function centsToUsd(cents) {
 }
 
 // --- GIVEAWAY INFO (giveaway page only) ---
+let countdownTimer = null;
 async function loadGiveawayInfo() {
     const prizeEl = document.getElementById('prizeName');
     if (!prizeEl) return;
@@ -329,7 +392,7 @@ async function loadGiveawayInfo() {
         const lastEl = document.getElementById('lastWinner');
         if (lastEl && data.lastWinner) {
             lastEl.replaceChildren();
-            if (data.lastWinner.avatar) {
+            if (isSteamAvatar(data.lastWinner.avatar)) {
                 const av = document.createElement('img');
                 av.src = data.lastWinner.avatar;
                 av.alt = '';
@@ -351,6 +414,7 @@ async function loadGiveawayInfo() {
                     endsEl.textContent = 'This round has ended — winner incoming!';
                     const tradeInput = document.getElementById('tradelink');
                     const btn = tradeInput?.closest('form')?.querySelector('button[type="submit"]');
+                    if (tradeInput) tradeInput.disabled = true;
                     if (btn && !btn.disabled) {
                         btn.disabled = true;
                         btn.textContent = 'Round ended';
@@ -365,8 +429,9 @@ async function loadGiveawayInfo() {
                 return false;
             };
             endsEl.style.display = 'block';
+            clearInterval(countdownTimer);
             if (!renderCountdown()) {
-                const timer = setInterval(() => { if (renderCountdown()) clearInterval(timer); }, 60000);
+                countdownTimer = setInterval(() => { if (renderCountdown()) clearInterval(countdownTimer); }, 60000);
             }
         }
         const countEl = document.getElementById('giveawayEntryCount');
@@ -391,17 +456,29 @@ async function handleGiveawaySubmit(event) {
     }
 
     const tradeLinkInput = document.getElementById('tradelink');
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    if (submitBtn.disabled) return;
+    const originalLabel = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Entering…';
+    let entered = false;
 
     try {
         const data = await apiRequest('/api/giveaway/enter', {
             method: 'POST',
             body: JSON.stringify({ tradeLink: tradeLinkInput.value.trim() })
         });
+        entered = true;
         showToast(data.message || 'Entry received! Good luck.');
         markGiveawayEntered();
         loadGiveawayInfo(); // refresh the "N heisters have entered" line
     } catch (err) {
         showToast(err.message);
+    } finally {
+        if (!entered) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalLabel;
+        }
     }
 }
 
@@ -411,6 +488,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initNavToggle();
     initSteamLoginLink();
     renderSteamUserBadge();
+    const giveawayForm = document.getElementById('giveawayForm');
+    if (giveawayForm) giveawayForm.addEventListener('submit', handleGiveawaySubmit);
     loadGiveawayInfo();
     prefillTradeLink();
     renderAdminNavLink();

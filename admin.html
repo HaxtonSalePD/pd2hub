@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; connect-src https://pd2hub-backend.onrender.com; img-src 'self' data: https://community.cloudflare.steamstatic.com https://community.steamstatic.com https://avatars.steamstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; base-uri 'none'; form-action 'self'; object-src 'none'">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex">
     <title>Giveaway Admin | PD2Hub Central</title>
@@ -479,6 +480,13 @@
             font-size: 0.85rem;
             border-top: 1px solid var(--border-color);
         }
+        /* Light theme: the dark gold needs white text to stay readable */
+        body.light-theme .btn-submit,
+        body.light-theme .btn-trade,
+        body.light-theme .btn {
+            color: #fff;
+        }
+
         /* --- PAYDAY THEME --- */
         header h1 {
             font-family: 'Allerta Stencil', Impact, 'Arial Black', sans-serif;

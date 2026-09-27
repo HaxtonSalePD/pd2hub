@@ -13,7 +13,7 @@ function el(tag, className, text) {
 function createWinnerRow(winner, isLatest) {
     const row = el('div', isLatest ? 'winner-row latest' : 'winner-row');
 
-    if (winner.avatar) {
+    if (isSteamAvatar(winner.avatar)) {
         const avatar = el('img');
         avatar.src = winner.avatar;
         avatar.alt = '';

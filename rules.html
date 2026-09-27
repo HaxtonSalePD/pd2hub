@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; connect-src https://pd2hub-backend.onrender.com; img-src 'self' data: https://community.cloudflare.steamstatic.com https://community.steamstatic.com https://avatars.steamstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; base-uri 'none'; form-action 'self'; object-src 'none'">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>House Rules | PD2Hub Central</title>
     <meta name="description" content="PD2Hub's house rules: what data the site stores, how the giveaway works, market rules, and how to get your data removed.">
@@ -386,6 +387,11 @@
                     (<a class="inline" href="https://steamcommunity.com/profiles/76561198251865874" target="_blank" rel="noopener noreferrer">Haxton Sale</a>)
                     and everything stored about your account — entries, listings, trade URL, the lot — gets deleted.
                     No questions, no waiting period beyond the time it takes to read the message.
+                </p>
+                <p style="margin-top: 0.75rem;">
+                    <strong>About backups:</strong> the site keeps a weekly backup copy of its database in case
+                    something breaks. Those copies are kept for about a month, so deleted data leaves the
+                    backups within roughly four weeks, as the old copies are replaced.
                 </p>
             </div>
         </section>
