@@ -36,7 +36,8 @@ function createWinnerRow(winner, isLatest) {
     }
 
     const drawnAt = new Date(winner.drawnAt).toLocaleString();
-    info.append(el('p', 'winner-meta', `Drawn ${drawnAt} from ${winner.eligibleEntries} eligible entries`));
+    info.append(el('p', 'winner-meta', (winner.prize ? `Won: ${winner.prize} — ` : '')
+        + `Drawn ${drawnAt} from ${winner.eligibleEntries} eligible entries`));
     row.append(info);
 
     if (winner.tradeLink && winner.tradeLink.startsWith('https://steamcommunity.com/tradeoffer/new/')) {
@@ -62,6 +63,10 @@ function renderAdminData(data) {
         if (data.startedAt) {
             prizeEl.append(` — running since ${new Date(data.startedAt).toLocaleDateString()}`);
         }
+    }
+    const perPrizeRow = document.getElementById('perPrizeRow');
+    if (perPrizeRow) {
+        perPrizeRow.style.display = data.active !== false && data.prizeUnits > 1 ? 'flex' : 'none';
     }
 
     const winnersList = document.getElementById('winnersList');
@@ -311,7 +316,10 @@ async function drawWinner() {
     drawBtn.disabled = true;
 
     try {
-        const data = await apiRequest('/api/admin/giveaway/draw', { method: 'POST' });
+        const data = await apiRequest('/api/admin/giveaway/draw', {
+            method: 'POST',
+            body: JSON.stringify({ perPrize: !!document.getElementById('perPrizeChk')?.checked })
+        });
         showToast(data.message);
         await loadGiveawayAdmin();
     } catch (err) {

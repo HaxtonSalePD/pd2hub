@@ -101,10 +101,14 @@ function createListingCard(listing, currentUser) {
 
     const actions = el('div', 'listing-actions');
     if (currentUser && currentUser.steamId === listing.sellerSteamId) {
+        const soldBtn = el('button', 'btn-trade-offer', 'Mark Sold');
+        soldBtn.type = 'button';
+        soldBtn.style.border = 'none';
+        soldBtn.addEventListener('click', () => markSold(listing));
         const removeBtn = el('button', 'btn-remove', 'Remove Listing');
         removeBtn.type = 'button';
         removeBtn.addEventListener('click', () => removeListing(listing.id));
-        actions.append(removeBtn);
+        actions.append(soldBtn, removeBtn);
     } else {
         if (listing.tradeLink && listing.tradeLink.startsWith('https://steamcommunity.com/tradeoffer/new/')) {
             const tradeBtn = el('a', 'btn-trade-offer', 'Send Trade Offer');
@@ -128,7 +132,9 @@ async function loadListings() {
     const status = document.getElementById('listingsStatus');
     const params = new URLSearchParams({
         search: document.getElementById('searchInput').value.trim(),
-        sort: document.getElementById('sortSelect').value
+        sort: document.getElementById('sortSelect').value,
+        rarity: document.getElementById('rarityFilter').value,
+        condition: document.getElementById('conditionFilter').value
     });
 
     // Ignore older responses if the user keeps typing
@@ -418,6 +424,36 @@ function initNoteCounter() {
     update();
 }
 
+async function markSold(listing) {
+    let quantity = listing.quantity || 1;
+    if (quantity > 1) {
+        const answer = prompt(`How many did you trade away? (1–${quantity})`, String(quantity));
+        if (answer === null) return;
+        quantity = Math.floor(Number(answer));
+        if (!Number.isInteger(quantity) || quantity < 1 || quantity > (listing.quantity || 1)) {
+            showToast(`Please enter a number between 1 and ${listing.quantity}.`);
+            return;
+        }
+    } else if (!confirm('Mark this listing as traded? It comes off the market.')) {
+        return;
+    }
+    try {
+        const data = await apiRequest(`/api/listings/${encodeURIComponent(listing.id)}/sold`, {
+            method: 'POST',
+            body: JSON.stringify({ quantity })
+        });
+        showToast(data.message);
+        myListingsLoaded = false;
+        inventoryLoaded = false;
+        loadListings();
+        if (!document.getElementById('mylistings').hidden) {
+            loadMyListings();
+        }
+    } catch (err) {
+        showToast(err.message);
+    }
+}
+
 async function removeListing(listingId) {
     if (!confirm('Remove this listing?')) return;
 
@@ -465,6 +501,8 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('searchInput').focus();
     });
     document.getElementById('sortSelect').addEventListener('change', loadListings);
+    document.getElementById('rarityFilter').addEventListener('change', loadListings);
+    document.getElementById('conditionFilter').addEventListener('change', loadListings);
     document.getElementById('searchInput').addEventListener('input', () => {
         clearTimeout(searchTimer);
         searchTimer = setTimeout(loadListings, 300);
