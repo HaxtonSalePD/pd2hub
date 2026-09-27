@@ -556,15 +556,31 @@
             margin-bottom: 0.5rem;
         }
 
-        .price-compare {
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin: -0.3rem 0 0.5rem;
+        .listing-card {
+            position: relative;
         }
 
-        .price-compare.good { color: #7bc96f; }
-        .price-compare.bad { color: var(--accent-red); }
-        .price-compare.even { color: var(--text-muted); }
+        .discount-badge {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            padding: 0.2rem 0.55rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+        }
+
+        .discount-badge.good {
+            background-color: #2e9e44;
+            color: #fff;
+        }
+
+        .discount-badge.bad {
+            background-color: var(--accent-red);
+            color: #fff;
+        }
 
         .listing-note {
             color: var(--text-muted);
@@ -846,6 +862,7 @@
                 </select>
                 <select id="sortSelect" aria-label="Sort listings">
                     <option value="newest">Newest first</option>
+                    <option value="discount">Biggest discount</option>
                     <option value="price_asc">Value: low to high</option>
                     <option value="price_desc">Value: high to low</option>
                 </select>
