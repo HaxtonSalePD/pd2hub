@@ -63,6 +63,15 @@ function renderAdminData(data) {
         if (data.startedAt) {
             prizeEl.append(` — running since ${new Date(data.startedAt).toLocaleDateString()}`);
         }
+        if (data.endsAt) {
+            const ended = new Date(data.endsAt) < new Date();
+            const endBit = document.createElement('strong');
+            endBit.textContent = ended
+                ? ' — ENDED: draw the winner!'
+                : ` — ends ${new Date(data.endsAt).toLocaleString()}`;
+            if (ended) endBit.style.color = 'var(--accent-red)';
+            prizeEl.append(endBit);
+        }
     }
     const perPrizeRow = document.getElementById('perPrizeRow');
     if (perPrizeRow) {
@@ -293,12 +302,16 @@ async function startNewGiveaway() {
     try {
         const data = await apiRequest('/api/admin/giveaway/new', {
             method: 'POST',
-            body: JSON.stringify(usingPool
-                ? { prizes: prizePool.map(entry => ({ itemName: entry.item.name, quantity: entry.quantity })), prizeName }
-                : { prizeName })
+            body: JSON.stringify({
+                ...(usingPool
+                    ? { prizes: prizePool.map(entry => ({ itemName: entry.item.name, quantity: entry.quantity })), prizeName }
+                    : { prizeName }),
+                durationDays: document.getElementById('giveawayDays').value.trim() || undefined
+            })
         });
         showToast(data.message);
         input.value = '';
+        document.getElementById('giveawayDays').value = '';
         prizePool = [];
         renderPrizePool();
         if (prizeInvItems.length) loadPrizeInventory();
