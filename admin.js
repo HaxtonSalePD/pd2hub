@@ -282,8 +282,9 @@ async function startNewGiveaway() {
         showToast('Pick skins for the pool, or enter a prize name (at least 3 characters).');
         return;
     }
+    const poolLabel = prizePool.map(entry => entry.quantity > 1 ? `${entry.item.name} ×${entry.quantity}` : entry.item.name).join(' + ');
     const label = usingPool
-        ? prizePool.map(entry => entry.quantity > 1 ? `${entry.item.name} ×${entry.quantity}` : entry.item.name).join(' + ')
+        ? (prizeName ? `${prizeName} (${poolLabel})` : poolLabel)
         : prizeName;
     if (!confirm(`Start a new giveaway for "${label}"?\n\nAll current entries and winners are archived, and everyone can enter again.`)) return;
 
@@ -293,7 +294,7 @@ async function startNewGiveaway() {
         const data = await apiRequest('/api/admin/giveaway/new', {
             method: 'POST',
             body: JSON.stringify(usingPool
-                ? { prizes: prizePool.map(entry => ({ itemName: entry.item.name, quantity: entry.quantity })) }
+                ? { prizes: prizePool.map(entry => ({ itemName: entry.item.name, quantity: entry.quantity })), prizeName }
                 : { prizeName })
         });
         showToast(data.message);

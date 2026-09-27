@@ -260,7 +260,7 @@ async function loadGiveawayInfo() {
         if (Array.isArray(data.prizes) && data.prizes.length > 1 && poolEl) {
             // Several prizes: show the pool as a list
             const total = data.prizes.reduce((sum, p) => sum + (p.quantity || 1), 0);
-            prizeEl.textContent = `Prize Pool — ${total} items`;
+            prizeEl.textContent = data.titleCustom ? data.prizeName : `Prize Pool — ${total} items`;
             poolEl.replaceChildren(...data.prizes.map(p => {
                 const row = document.createElement('div');
                 row.style.cssText = 'display:flex;align-items:center;gap:0.8rem;padding:0.5rem 0;border-bottom:1px solid var(--border-color);';
@@ -301,6 +301,11 @@ async function loadGiveawayInfo() {
                 imgEl.style.display = 'block';
             }
             const metaParts = [data.prizeCondition, data.prizeRarity, data.prizeStatBoost ? 'Stat Boost' : null].filter(Boolean);
+            // Custom title over a single skin: keep the skin's own name visible too
+            if (data.titleCustom && data.prizes?.[0]) {
+                const p = data.prizes[0];
+                metaParts.unshift(p.quantity > 1 ? `${p.name} ×${p.quantity}` : p.name);
+            }
             if (metaEl && metaParts.length) {
                 metaEl.textContent = metaParts.join(' · ');
                 metaEl.style.display = 'block';
