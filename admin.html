@@ -310,6 +310,37 @@
             box-shadow: 0 0 10px rgba(255, 194, 26, 0.35);
         }
 
+        /* Loading placeholders (see showSkeletonTiles in main.js) */
+        .inv-skeleton {
+            pointer-events: none;
+            cursor: default;
+            animation: skeleton-pulse 1.2s ease-in-out infinite alternate;
+        }
+
+        .inv-skeleton .sk-img {
+            height: 64px;
+            border-radius: 4px;
+            background-color: var(--border-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .inv-skeleton .sk-line {
+            height: 0.7rem;
+            width: 80%;
+            margin: 0.35rem auto 0;
+            border-radius: 3px;
+            background-color: var(--border-color);
+        }
+
+        .inv-skeleton .sk-line.short {
+            width: 50%;
+        }
+
+        @keyframes skeleton-pulse {
+            from { opacity: 1; }
+            to { opacity: 0.45; }
+        }
+
         .inv-tile img {
             width: 100%;
             height: 64px;

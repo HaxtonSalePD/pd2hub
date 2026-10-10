@@ -189,6 +189,36 @@ function logoutSteam() {
     window.location.reload();
 }
 
+// --- LOADING PLACEHOLDERS ---
+// Grey placeholder tiles shown while an inventory loads, so the grid never looks stuck
+// (most noticeable while the free server wakes up)
+function showSkeletonTiles(grid, count = 12) {
+    if (!grid) return;
+    const tiles = Array.from({ length: count }, () => {
+        const tile = document.createElement('div');
+        tile.className = 'inv-tile inv-skeleton';
+        tile.setAttribute('aria-hidden', 'true');
+        const img = document.createElement('div');
+        img.className = 'sk-img';
+        const line = document.createElement('div');
+        line.className = 'sk-line';
+        const short = document.createElement('div');
+        short.className = 'sk-line short';
+        tile.append(img, line, short);
+        return tile;
+    });
+    grid.replaceChildren(...tiles);
+    grid.style.display = 'grid';
+    grid.setAttribute('aria-busy', 'true');
+}
+
+function clearSkeletonTiles(grid) {
+    if (!grid) return;
+    grid.querySelectorAll('.inv-skeleton').forEach(tile => tile.remove());
+    grid.removeAttribute('aria-busy');
+    if (grid.children.length === 0) grid.style.display = 'none';
+}
+
 // --- BACKEND REQUESTS ---
 
 // Calls the backend with the login token attached. Throws an Error with the server's message on failure.

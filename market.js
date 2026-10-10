@@ -464,7 +464,9 @@ async function importInventory() {
         return;
     }
     const hint = document.getElementById('importHint');
+    const grid = document.getElementById('inventoryGrid');
     hint.textContent = 'Opening your stash… (this can take a few seconds)';
+    showSkeletonTiles(grid);
 
     try {
         const data = await apiRequest('/api/inventory');
@@ -478,6 +480,8 @@ async function importInventory() {
     } catch (err) {
         hint.textContent = 'Could not load your inventory — make sure it is set to public, then try again.';
         showToast(err.message);
+    } finally {
+        clearSkeletonTiles(grid);
     }
 }
 
