@@ -266,7 +266,9 @@ function renderPrizeGrid(items) {
 
 async function loadPrizeInventory() {
     const hint = document.getElementById('prizePickHint');
+    const grid = document.getElementById('prizeGrid');
     hint.textContent = 'Opening your stash… (this can take a few seconds)';
+    showSkeletonTiles(grid);
     try {
         const data = await apiRequest('/api/inventory');
         if (data.items.length === 0) {
@@ -279,6 +281,8 @@ async function loadPrizeInventory() {
     } catch (err) {
         hint.textContent = 'Could not load your inventory — you can still type a prize name below.';
         showToast(err.message);
+    } finally {
+        clearSkeletonTiles(grid);
     }
 }
 
