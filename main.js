@@ -132,12 +132,24 @@ function getSavedUser() {
     return null;
 }
 
-// Points the "Sign in through Steam" button back to the current page after login
+// Sends the "Sign in through Steam" button straight to Steam. Steam returns the
+// visitor to this site's login.html, so Steam's sign-in page names this website
+// (not the backend). login.html then returns them to the current page.
 function initSteamLoginLink() {
     const steamAuthBtn = document.getElementById('steamAuthBtn');
     if (!steamAuthBtn) return;
     const page = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
-    steamAuthBtn.href = `${BACKEND_URL}/auth/steam?returnTo=${encodeURIComponent(page)}&state=${getLoginState()}`;
+    const siteBase = window.location.origin + window.location.pathname.replace(/[^/]*$/, '');
+    const returnTo = `${siteBase}login.html?page=${encodeURIComponent(page)}&state=${getLoginState()}`;
+    const query = new URLSearchParams({
+        'openid.ns': 'http://specs.openid.net/auth/2.0',
+        'openid.mode': 'checkid_setup',
+        'openid.return_to': returnTo,
+        'openid.realm': siteBase,
+        'openid.identity': 'http://specs.openid.net/auth/2.0/identifier_select',
+        'openid.claimed_id': 'http://specs.openid.net/auth/2.0/identifier_select'
+    });
+    steamAuthBtn.href = `https://steamcommunity.com/openid/login?${query}`;
 }
 
 function renderSteamUserBadge() {
