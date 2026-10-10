@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; connect-src https://pd2hub-backend.onrender.com; img-src 'self' data: https://community.cloudflare.steamstatic.com https://community.steamstatic.com https://avatars.steamstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; base-uri 'none'; form-action 'self'; object-src 'none'">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <meta name="referrer" content="no-referrer">
+    <title>Signing In | PD2Hub Central</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Allerta+Stencil&family=Oswald:wght@500;600&family=Barlow:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://pd2hub-backend.onrender.com">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            min-height: 100vh;
+            background:
+                linear-gradient(rgba(0, 0, 0, 0.82), rgba(0, 0, 0, 0.94)),
+                radial-gradient(circle at 50% 35%, #3a2d12 0%, #0c0b09 70%);
+            color: #e0e0e0;
+            font-family: 'Barlow', 'Segoe UI', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+        h1 {
+            font-family: 'Allerta Stencil', Impact, sans-serif;
+            font-size: clamp(2rem, 7vw, 3.2rem);
+            color: #ffc21a;
+            letter-spacing: 6px;
+            text-shadow: 4px 4px 0 rgba(0, 0, 0, 0.6);
+        }
+        p {
+            color: #a89b7c;
+            margin-top: 1rem;
+            max-width: 460px;
+        }
+        a.btn {
+            display: inline-block;
+            margin-top: 2rem;
+            background-color: #ffc21a;
+            color: #000;
+            font-family: 'Oswald', sans-serif;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-decoration: none;
+            padding: 0.9rem 2.4rem;
+            border-radius: 4px;
+        }
+        a.btn:hover { background-color: #fff; }
+        .stripe {
+            position: fixed;
+            left: 0; right: 0;
+            height: 18px;
+            background: repeating-linear-gradient(-45deg, #ffc21a 0 24px, #0b0a08 24px 48px);
+        }
+        .stripe.top { top: 0; }
+        .stripe.bottom { bottom: 0; }
+        @media (prefers-reduced-motion: no-preference) {
+            .dots::after {
+                content: '';
+                animation: dots 1.5s steps(4, end) infinite;
+            }
+            @keyframes dots {
+                0% { content: ''; }
+                25% { content: '.'; }
+                50% { content: '..'; }
+                75% { content: '...'; }
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stripe top"></div>
+    <h1>Signing In</h1>
+    <p id="loginStatus" role="status" aria-live="polite"><span class="dots">Checking your Steam sign-in with the safehouse</span></p>
+    <a class="btn" id="loginBack" href="index.html" hidden>Back to the site</a>
+    <div class="stripe bottom"></div>
+
+    <script src="main.js"></script>
+    <script src="login.js"></script>
+</body>
+</html>
